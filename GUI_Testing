@@ -1,8 +1,9 @@
-def __main__():
-   ans = raw_input("Would you like to run the GUI? (y/n)")
-   if ans == "y":
-      run_GUI()
-   return true
+# # # # # # # #
+# MAIN
+ans = raw_input("Would you like to run the GUI? (y/n) ")
+if ans == "y":
+   run_GUI()
+# # # # # # # #
 
 def run_GUI():
    printNow("I am in the GUI!!")
