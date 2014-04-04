@@ -1,0 +1,68 @@
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Scrollable File Contents Viewer class
+class FileContentsViewer(swing.JFrame):
+   import os
+   import java
+   def __init__(self, directory=""):
+      swing.JFrame.__init__(self, title="File Contents Viewer", size=(210,250))
+      self.contentPane.layout = java.awt.BorderLayout()
+      
+      if directory != "":
+         self.currentDirectory = directory
+      else:
+         chooser = swing.JFileChooser()
+         chooser.setFileSelectionMode(swing.JFileChooser.DIRECTORIES_ONLY)
+         chooser.setApproveButtonText("Select Folder")
+         chooser.setDialogTitle("Select Folder to Show File List")
+         val = None
+         cancelCount = 0
+         while (val != swing.JFileChooser.APPROVE_OPTION) and (cancelCount < 3):
+            val = chooser.showDialog(self, None)
+            if (val == swing.JFileChooser.CANCEL_OPTION):
+               cancelCount += 1
+         #END WHILE
+         if (cancelCount == 3):
+            self.currentDirectory = home = os.path.expanduser("~")
+            printNow(self.currentDirectory)
+         else:
+            self.currentDirectory = str(chooser.getSelectedFile())
+      #END IF/ELSE
+      
+      self.files = swing.JList(os.listdir(self.currentDirectory))
+      pane = swing.JScrollPane(self.files)
+      self.contentPane.add(pane,java.awt.BorderLayout.CENTER)
+      
+      fileView = swing.JButton("View Contents", size=(65,30),
+                               actionPerformed=self.fileView)
+      self.contentPane.add(fileView, java.awt.BorderLayout.SOUTH)
+      self.pack()
+      self.visible = true
+   #END DEF
+   
+   def fileView(self,event):
+      selected=self.files.getSelectedIndices()
+      selectedFile = self.files.getModel( ).getElementAt( selected[0])
+      selectedFile = self.currentDirectory+ "//"+ selectedFile
+      if selectedFile.endswith(".jpg"):
+         pic = makePicture(selectedFile)
+         show(pic)
+      if selectedFile.endswith(".wav"):
+         snd = makeSound(selectedFile)
+         play(snd)
+   #END DEF
+   
+   def changeDirectory():
+      a = false
+   #END DEF
+#END CLASS
+
+
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# MAIN
+fcv = FileContentsViewer()
+if raw_input("Continue? (y/n) ") == "y":
+   fcv2 = FileContentsViewer("/Users/peterwalker/Desktop/")
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
