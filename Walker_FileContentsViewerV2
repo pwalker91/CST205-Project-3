@@ -32,9 +32,9 @@ class FileContentsViewer(swing.JFrame):
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
       selectedFile = self.currentDirectory+ "/"+ selectedFile
-      if (selectedFile.endswith(".jpg") or 
-          selectedFile.endswith(".png") or 
-          selectedFile.endswith(".gif") ):
+      if (selectedFile.endswith(".jpg") or selectedFile.endswith(".JPG") or
+          selectedFile.endswith(".png") or selectedFile.endswith(".PNG")
+          ):
          pic = makePicture(selectedFile)
          show(pic)
       if selectedFile.endswith(".wav"):
@@ -45,7 +45,8 @@ class FileContentsViewer(swing.JFrame):
    def changeDirectory(self, event):
       self.contentPane.removeAll()
       filesList = self.listFilesInDirectory()
-      pane = swing.JScrollPane(swing.JList(filesList))
+      self.files = swing.JList(filesList)
+      pane = swing.JScrollPane(self.files)
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
       
       fileView = swing.JButton("View Contents", size=(65,30),
