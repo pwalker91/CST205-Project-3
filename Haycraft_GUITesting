@@ -30,7 +30,7 @@ class FileContentsViewer(swing.JFrame):
   def setFolder(self,event):
     setMediaPath()
 
-class FileContentsViewer2(swing.JFrame)
+class FileContentsViewer2(swing.JFrame):
   def __init__(self,directory):
     swing.JFrame.__init__(self, title="File Contents Viewer", size=(210,250))
     self.contentPane.layout = java.awt.BorderLayout()
@@ -49,9 +49,59 @@ class FileContentsViewer2(swing.JFrame)
     selected=self.files.getSelectedIndices()
     selectedFile = self.files.getModel().getElementAt(selected[0])
     selectedFile = self.currentDirectory+"//"+selectedFile
-    if selectedFile.endswith(".jpg")
+    if selectedFile.endswith(".jpg"):
       pic = makePicture(selectedFile)
       show(pic)
-    if selectedFile.endswith(".wav")
+    if selectedFile.endswith(".wav"):
       snd = makeSound(selectedFile)
       play(snd)
+      
+class FileContentsViewer3(swing.JFrame):
+  def __init__(self,directory=""):
+    swing.JFrame.__init__(self, title="File Contents Viewer", size=(210,250))
+    self.contentPane.layout = java.awt.BorderLayout()
+    
+    self.currentDirectory=setMediaPath()
+    
+    directoryList = os.listdir(self.currentDirectory)
+    
+    self.files=swing.JList(directoryList)
+    pane = swing.JScrollPane(self.files)
+    self.contentPane.add(pane,java.awt.BorderLayout.CENTER)
+    
+    fileView = swing.JButton("View Contents", size=(65,30), actionPerformed=self.fileView)
+    self.contentPane.add(fileView, java.awt.BorderLayout.EAST)
+    
+    changeDir = swing.JButton("Change Directory", size=(65,30), actionPerformed=self.changeDirectory)
+    self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
+    print "here"
+    
+    self.pack()
+    self.visible=1
+    
+  def fileView(self,event):
+    selected=self.files.getSelectedIndices()
+    selectedFile = self.files.getModel().getElementAt(selected[0])
+    selectedFile = self.currentDirectory+"//"+selectedFile
+    if selectedFile.endswith(".jpg"):
+      pic = makePicture(selectedFile)
+      show(pic)
+      del selected
+      del selectedFile
+    if selectedFile.endswith(".wav"):
+      snd = makeSound(selectedFile)
+      play(snd)
+    
+  def changeDirectory(self, event):
+    self.contentPane.removeAll()
+    self.currentDirectory=setMediaPath()
+    directoryList = os.listdir(self.currentDirectory)
+    self.files=swing.JList(directoryList)
+    pane = swing.JScrollPane(self.files)
+    self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
+    fileView = swing.JButton("View Contents", size=(65,30), actionPerformed=self.fileView)
+    self.contentPane.add(fileView, java.awt.BorderLayout.EAST)
+    changeDir = swing.JButton("Change Directory", size=(65,30), actionPerformed = self.changeDirectory)
+    self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
+    self.pack()
+    self.visible = true
