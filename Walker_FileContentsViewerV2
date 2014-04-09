@@ -5,7 +5,7 @@ class FileContentsViewer(swing.JFrame):
    import os
    import java
    def __init__(self, directory=""):
-      swing.JFrame.__init__(self, title="File Contents Viewer", size=(210,250))
+      swing.JFrame.__init__(self, title="File Contents Viewer", size=(500,350))
       self.contentPane.layout = java.awt.BorderLayout()
       
       filesList = self.listFilesInDirectory(directory)
@@ -47,9 +47,15 @@ class FileContentsViewer(swing.JFrame):
       filesList = self.listFilesInDirectory()
       pane = swing.JScrollPane(swing.JList(filesList))
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
+      
+      fileView = swing.JButton("View Contents", size=(65,30),
+                               actionPerformed = self.fileView)
+      self.contentPane.add(fileView, java.awt.BorderLayout.EAST)
       changeDir = swing.JButton("Change Directory", size=(65,30),
                                actionPerformed = self.changeDirectory)
       self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
+      
+      self.pack()
       self.visible = true
    #END DEF
    
