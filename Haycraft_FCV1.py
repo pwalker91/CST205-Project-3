@@ -9,7 +9,7 @@ class FileRunner(swing.JFrame):
     
     files = []
     
-    self.currentDirectory = "C:\\Users\\Pilot\\My Documents\\GitHub\\CST205-Project-3"
+    self.currentDirectory = "C:\\Users\\Pilot\\My Documents\\CST 205\\"
     self.files = swing.JList(os.listdir(self.currentDirectory))
     pane = swing.JScrollPane(self.files)
     self.contentPane.add(pane,java.awt.BorderLayout.CENTER)
@@ -28,6 +28,7 @@ class FileRunner(swing.JFrame):
     self.visible = 1
     
   def fileView(self,event):
+    print "Hello!"
     selected=self.files.getSelectedIndices()
     selectedFile = self.files.getModel( ).getElementAt( selected[0])
     selectedFile = self.currentDirectory+ "//"+ selectedFile
