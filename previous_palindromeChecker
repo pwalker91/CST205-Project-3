@@ -1,7 +1,0 @@
-def checkPalin(string):
-   return string==string[::-1]
-def rPalin(string):
-   if checkPalin(string):
-      return 1+( rPalin(string[:(len(string)/2)]) and rPalin(string[(len(string)/2)+1:]) )
-   else:
-      return 0
