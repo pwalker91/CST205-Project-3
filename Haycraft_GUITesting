@@ -1,6 +1,14 @@
 import javax.swing as swing
-import os
+import os, os.path
 import java
+
+fd=r"C:\\Users\\Pilot\\My Documents\\GitHub\\CST205-Project-3"
+
+printNow(os.path.isdir(fd))
+
+os.chdir(fd)
+
+printNow(os.getcwd())
 
 class FileContentsViewer(swing.JFrame):
   def __init__(self):
