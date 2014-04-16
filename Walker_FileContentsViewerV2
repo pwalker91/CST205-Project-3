@@ -14,15 +14,21 @@ class FileContentsViewer(swing.JFrame):
       pane = swing.JScrollPane(self.files)
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
       
+      
       ""
       fileView = swing.JButton("View Contents", size=(65,30),
                                actionPerformed = self.fileView)
-      self.contentPane.add(fileView, java.awt.BorderLayout.EAST)
+      self.contentPane.add(fileView, java.awt.BorderLayout.WEST)
       ""
       changeDir = swing.JButton("Change Directory", size=(65,30),
                                actionPerformed = self.changeDirectory)
       self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
       ""
+      smallFrame = swing.JPanel(java.awt.GridLayout(3,3))
+      smallFrame.add(swing.JButton("1"))
+      smallFrame.add(swing.JButton("2"))
+      smallFrame.add(swing.JButton("3"))
+      self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
       
       self.pack()
       self.visible = true
@@ -43,18 +49,20 @@ class FileContentsViewer(swing.JFrame):
    #END DEF
    
    def changeDirectory(self, event):
-      self.contentPane.removeAll()
+      self.contentPane.remove(swing.JScrollPane)
       filesList = self.listFilesInDirectory()
       self.files = swing.JList(filesList)
       pane = swing.JScrollPane(self.files)
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
       
+      """
       fileView = swing.JButton("View Contents", size=(65,30),
                                actionPerformed = self.fileView)
       self.contentPane.add(fileView, java.awt.BorderLayout.EAST)
       changeDir = swing.JButton("Change Directory", size=(65,30),
                                actionPerformed = self.changeDirectory)
       self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
+      """
       
       self.pack()
       self.visible = true
