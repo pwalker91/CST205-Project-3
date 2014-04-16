@@ -37,8 +37,8 @@ class FileRunner(swing.JFrame):
     if selectedFile.endswith(".wav"):
       snd = makeSound
   
-  def first(self,event):
-    printNow("Hello!!!")
+  def first(self, event):
+    self.message.text = "Hello!"
   
-  def second(self,event):
+  def second(event):
     printNow("DUH!")
