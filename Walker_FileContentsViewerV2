@@ -24,10 +24,13 @@ class FileContentsViewer(swing.JFrame):
                                actionPerformed = self.changeDirectory)
       self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
       ""
-      smallFrame = swing.JPanel(java.awt.GridLayout(3,3))
-      smallFrame.add(swing.JButton("1"))
-      smallFrame.add(swing.JButton("2"))
-      smallFrame.add(swing.JButton("3"))
+      smallFrame = swing.JPanel(java.awt.GridLayout(0,1))
+      smallFrame.add(swing.JButton("1", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("2", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
       self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
       
       self.pack()
@@ -97,7 +100,10 @@ class FileContentsViewer(swing.JFrame):
       tempFilesList = os.listdir(self.currentDirectory)
       toRemove = []
       for entry in tempFilesList:
-         if (entry[0:1] == ".") or (os.path.isdir(self.currentDirectory+"/"+entry)):
+         if ( (entry[0:1] == ".") or 
+              (os.path.isdir(self.currentDirectory+"/"+entry)) or
+              ((entry[-4:] != ".jpg") and (entry[-4:] != ".wav"))
+            ):
             toRemove.append(entry)
          #END IF
       #END FOR
@@ -109,6 +115,9 @@ class FileContentsViewer(swing.JFrame):
       return tempFilesList
    #END DEF
    
+   def testing(self, event):
+      System.out.println("hello")
+   #END DEF
 #END CLASS
 
 
