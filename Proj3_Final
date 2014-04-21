@@ -127,9 +127,8 @@ class FileContentsViewer(swing.JFrame):
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # MAIN
+import time
+printNow("Please use this GUI to run some of our previous projects")
+time.sleep(2)
 fcv = FileContentsViewer()
-"""
-if raw_input("Continue? (y/n) ") == "y":
-   fcv2 = FileContentsViewer("/Users/peterwalker/Desktop/")
-"""
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
