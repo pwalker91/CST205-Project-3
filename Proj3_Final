@@ -221,7 +221,9 @@ class FileContentsViewer(swing.JFrame):
           writePictureTo(picture, dir+'photo'+str(value)+'.jpg')
       show(picture)
       mov = makeMovieFromInitialFile(dir+'photo0001.jpg')
+      print mov
       writeAVI(mov, dir+'newMovie.avi', 20)
+      playMovie(mov)
    #END DEF
    
    
