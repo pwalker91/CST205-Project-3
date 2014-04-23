@@ -120,10 +120,10 @@ class FileContentsViewer(swing.JFrame):
                cancelCount += 1
          #END WHILE
          if (cancelCount == 3):
-            if os.path.isdir( os.path.expanduser("~")+"/Desktop" ):
-               self.currentDirectory = os.path.expanduser("~")+"/Desktop"
+            if os.path.isdir( os.path.expanduser("~")+"\Desktop" ):
+               self.currentDirectory = os.path.expanduser("~")+"\Desktop"
             else:
-               self.currentDirectory = os.path.expanduser("~")+"/desktop"
+               self.currentDirectory = os.path.expanduser("~")+"\desktop"
             #END IF/ELSE
          else:
             self.currentDirectory = str(chooser.getSelectedFile())
@@ -169,20 +169,23 @@ class FileContentsViewer(swing.JFrame):
    
 # OUR PREVIOUS PROJECTS ARE FUNCTIONS BELOW
    
-   # DESC: ..
+   # DESC: Uses selected audio file to create a picture. Will then create a video of the picture creating itself.
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   .wav file from directory list
+   # OUTPUTS:  picture of audio file, video creating picture of audio file
    def Aaron_First_Project(self, event):
-      dir='C:\\Users\\Pilot\\My Documents\\CST 205\\pictures\\'
+      selected = self.files.getSelectedIndices()
+      selectedFile = self.files.getModel( ).getElementAt( selected[0])
+      selectedFile = self.currentDirectory+ "/"+ selectedFile
+      dir=self.currentDirectory+'\\pictures\\'
       if not os.path.exists(dir):
         os.makedirs(dir)
       x=0
       y=0
       value=0
-      data = requestInteger("Please enter a picture size: ")
+      data = 300
       picture=makeEmptyPicture(data,data)
-      file=pickAFile()
+      file=selectedFile
       sound=makeSound(file)
       overall=(getNumSamples(sound))/(data*data)
       int(overall)
@@ -217,17 +220,20 @@ class FileContentsViewer(swing.JFrame):
         else:
           writePictureTo(picture, dir+'photo'+str(value)+'.jpg')
       show(picture)
-      mov = makeMovieFromInitialFile(pickAFile())
+      mov = makeMovieFromInitialFile(dir+'photo0001.jpg')
       writeAVI(mov, dir+'newMovie.avi', 20)
    #END DEF
    
    
-   # DESC: ..
+   # DESC: This function will take in a wav file, and will separate and speed up the audio sound in three different pieces.
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   .wav file
+   # OUTPUTS:  The playing of sped up audio sounds.
    def Aaron_Second_Project(self, event):
-      s = pickAFile()
+      selected = self.files.getSelectedIndices()
+      selectedFile = self.files.getModel( ).getElementAt( selected[0])
+      selectedFile = self.currentDirectory+ "/"+ selectedFile
+      s = selectedFile
       sound = makeSound(s)
       soundValue = 0
       first = int(getLength(sound)/3)
