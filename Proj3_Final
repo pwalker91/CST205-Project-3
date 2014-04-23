@@ -4,38 +4,46 @@
 class FileContentsViewer(swing.JFrame):
    import os
    import java
+   
+   # ----------------
+   # Class vars
+   currentDirectory = ""
+   files = None
+   # ----------------
+   
    def __init__(self, directory=""):
-      swing.JFrame.__init__(self, title="File Contents Viewer", size=(500,350))
+      swing.JFrame.__init__(self, title="File Contents Viewer", size=(800,600))
+      self.setLocationByPlatform(true)
       self.contentPane.layout = java.awt.BorderLayout()
       
-      filesList = self.listFilesInDirectory(directory)
-      
+      self.currentDirectory = directory
+      filesList = self.listFilesInDirectory(self.currentDirectory)
       self.files = swing.JList(filesList)
-      pane = swing.JScrollPane(self.files)
+      pane = swing.JScrollPane(self.files, name="ScrollPane", size=(400,200))
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
       
-      
-      ""
-      fileView = swing.JButton("View Contents", size=(65,30),
-                               actionPerformed = self.fileView)
+      fileView = swing.JButton("View Contents", name="FileView", actionPerformed = self.fileView)
       self.contentPane.add(fileView, java.awt.BorderLayout.WEST)
-      ""
-      changeDir = swing.JButton("Change Directory", size=(65,30),
-                               actionPerformed = self.changeDirectory)
+      
+      changeDir = swing.JButton("Change Directory", name="ChangeDir", actionPerformed = self.changeDirectory)
       self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
-      ""
-      smallFrame = swing.JPanel(java.awt.GridLayout(0,1))
+      
+      dirHeader = swing.JLabel(self.currentDirectory, swing.JLabel.CENTER, name="Header")
+      self.contentPane.add(dirHeader, java.awt.BorderLayout.NORTH)
+      
+      smallFrame = swing.JPanel(java.awt.GridLayout(0,1), name="ButtonGrid")
       smallFrame.add(swing.JButton("1", actionPerformed=self.first))
       smallFrame.add(swing.JButton("2", actionPerformed=self.second))
       smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
-      smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
-      smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
-      smallFrame.add(swing.JButton("3", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("4", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("5", actionPerformed=self.testing))
       self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
       
       self.pack()
       self.visible = true
    #END DEF
+   
+   
    
    def fileView(self, event):
       selected = self.files.getSelectedIndices()
@@ -46,30 +54,44 @@ class FileContentsViewer(swing.JFrame):
           ):
          pic = makePicture(selectedFile)
          show(pic)
+      #END IF
       if selectedFile.endswith(".wav"):
          snd = makeSound(selectedFile)
          play(snd)
+         while raw_input("Press Enter to Stop:"):
+            stopPlaying(snd)
+         #END WHILE
+      #END IF
    #END DEF
    
+   
+   
    def changeDirectory(self, event):
-      self.contentPane.remove(swing.JScrollPane)
+      components = self.contentPane.getComponents()
+      index = 0
+      for elem in components:
+         if elem.getName() == "ScrollPane":
+            index = components.index(elem)
+      self.contentPane.remove(index)
       filesList = self.listFilesInDirectory()
       self.files = swing.JList(filesList)
-      pane = swing.JScrollPane(self.files)
+      pane = swing.JScrollPane(self.files, name="ScrollPane", size=(400,200))
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
       
-      """
-      fileView = swing.JButton("View Contents", size=(65,30),
-                               actionPerformed = self.fileView)
-      self.contentPane.add(fileView, java.awt.BorderLayout.EAST)
-      changeDir = swing.JButton("Change Directory", size=(65,30),
-                               actionPerformed = self.changeDirectory)
-      self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
-      """
+      components = self.contentPane.getComponents()
+      index = 0
+      for elem in components:
+         if elem.getName() == "Header":
+            index = components.index(elem)
+      self.contentPane.remove(index)
+      dirHeader = swing.JLabel(self.currentDirectory, swing.JLabel.CENTER, name="Header")
+      self.contentPane.add(dirHeader, java.awt.BorderLayout.NORTH)
       
       self.pack()
       self.visible = true
    #END DEF
+   
+   
    
    def listFilesInDirectory(self, directory = ""):
       if directory == "":
@@ -96,7 +118,6 @@ class FileContentsViewer(swing.JFrame):
       else:
          self.currentDirectory = directory
       #END IF/ELSE
-      
       tempFilesList = os.listdir(self.currentDirectory)
       toRemove = []
       for entry in tempFilesList:
@@ -107,7 +128,6 @@ class FileContentsViewer(swing.JFrame):
             toRemove.append(entry)
          #END IF
       #END FOR
-      
       for removing in toRemove:
          tempFilesList.remove(removing)
       #END FOR
@@ -119,7 +139,13 @@ class FileContentsViewer(swing.JFrame):
       mywindow = swing.JFrame()
       mywindow.contentPane.add(swing.JLabel("I am here"), java.awt.BorderLayout.CENTER)
       mywindow.visible = true
+      #mywindow = swing.JFrame()
+      #mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+      #mywindow.contentPane.add(swing.JTextField(index), java.awt.BorderLayout.CENTER)
    #END DEF
+   
+   
+   
    def first(self, event):
       dir='C:\\Users\\Pilot\\My Documents\\CST 205\\pictures\\'
       if not os.path.exists(dir):
@@ -166,7 +192,10 @@ class FileContentsViewer(swing.JFrame):
       show(picture)
       mov = makeMovieFromInitialFile(pickAFile())
       writeAVI(mov, dir+'newMovie.avi', 20)
-  
+   #END DEF
+   
+   
+   
    def second(self, event):
       s = pickAFile()
       sound = makeSound(s)
@@ -191,8 +220,11 @@ class FileContentsViewer(swing.JFrame):
   
       blockingPlay(file1)
       blockingPlay(file2)
-      blockingPlay(file3)  
+      blockingPlay(file3)
+   #END DEF
 #END CLASS
+
+
 
 
 
@@ -201,6 +233,6 @@ class FileContentsViewer(swing.JFrame):
 # MAIN
 import time
 printNow("Please use this GUI to run some of our previous projects")
-time.sleep(2)
+time.sleep(1)
 fcv = FileContentsViewer()
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
