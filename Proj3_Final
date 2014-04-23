@@ -13,6 +13,7 @@ class FileContentsViewer(swing.JFrame):
    
    def __init__(self, directory=""):
       swing.JFrame.__init__(self, title="File Contents Viewer", size=(800,600))
+      self.setLocationByPlatform(true)
       self.contentPane.layout = java.awt.BorderLayout()
       
       self.currentDirectory = directory
