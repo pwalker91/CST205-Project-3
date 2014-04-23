@@ -174,12 +174,15 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   .wav file from directory list
    # OUTPUTS:  picture of audio file, video creating picture of audio file
    def Aaron_First_Project(self, event):
+      #Determines directory, sets it, then creates it if it doesn't exist.
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
       selectedFile = self.currentDirectory+ "/"+ selectedFile
       dir=self.currentDirectory+'\\pictures\\'
       if not os.path.exists(dir):
         os.makedirs(dir)
+      #END IF
+      #Variable declaration
       x=0
       y=0
       value=0
@@ -199,27 +202,42 @@ class FileContentsViewer(swing.JFrame):
           avg=total/overall
           if (avg<-50):
             pixelArray[pixelIndex].setColor(red)
+          #END IF
           elif(avg<-25 and avg>=-50):
             pixelArray[pixelIndex].setColor(green)
+          #END ELSE/IF
           elif(avg<0 and avg>=-25):
             pixelArray[pixelIndex].setColor(blue)
+          #END ELSE/IF
           elif(avg<25 and avg>=0):
             pixelArray[pixelIndex].setColor(yellow)
+          #END ELSE/IF
           elif(avg<50 and avg>=25):
             pixelArray[pixelIndex].setColor(magenta)
+          #END ELSE/IF
           elif(avg>=50):
             pixelArray[pixelIndex].setColor(orange)
+          #END ELSE/IF
           pixelIndex+=1
+        #END FOR J
         value=value+1
         if(value<10):
           writePictureTo(picture, dir+'photo000'+str(value)+'.jpg')
+        #END IF
         elif(value<100):
           writePictureTo(picture, dir+'photo00'+str(value)+'.jpg')
+        #END ELSE/IF
         elif(value<1000):
           writePictureTo(picture, dir+'photo0'+str(value)+'.jpg')
+        #END ELSE/IF
         else:
           writePictureTo(picture, dir+'photo'+str(value)+'.jpg')
+        #END ELSE
+      #END FOR I
+      #END FOR K
+      #Shows final picture
       show(picture)
+      #Functions below will make and show movie.
       mov = makeMovieFromInitialFile(dir+'photo0001.jpg')
       print mov
       writeAVI(mov, dir+'newMovie.avi', 20)
@@ -232,30 +250,37 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   .wav file
    # OUTPUTS:  The playing of sped up audio sounds.
    def Aaron_Second_Project(self, event):
+      #Sets directory and ability to use file from list.
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
       selectedFile = self.currentDirectory+ "/"+ selectedFile
+      #Variable declarations
       s = selectedFile
       sound = makeSound(s)
       soundValue = 0
+      #Creates values for different pieces of audio files and the files the audio will be stored in.
       first = int(getLength(sound)/3)
       second = int(2*getLength(sound)/3)  
       file1 = makeEmptySound(first, 44100)
       file2 = makeEmptySound(second, 44100)
       file3 = makeEmptySound(getLength(sound), 44100)
-  
+      #For loops for placing the new audio values in the new audio files
       for sample in range(0, first):
         value = getSampleValueAt(sound, sample)
         setSampleValueAt(file1, sample, value*200)
+      #END FOR
   
       for sample in range(first-1, second):
         value = getSampleValueAt(sound, sample)
         setSampleValueAt(file2, sample, value*200)
+      #END FOR
   
       for sample in range(second-1, getLength(sound)):
         value = getSampleValueAt(sound, sample)
         setSampleValueAt(file3, sample, value*200)
-  
+      #END FOR
+      
+      #Blocking play functions will separate the play of the audio files.
       blockingPlay(file1)
       blockingPlay(file2)
       blockingPlay(file3)
