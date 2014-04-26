@@ -39,9 +39,10 @@ class FileContentsViewer(swing.JFrame):
       smallFrame = swing.JPanel(java.awt.GridLayout(0,1), name="ButtonGrid")
       smallFrame.add(swing.JButton("Aaron's First Project", actionPerformed=self.Aaron_First_Project))
       smallFrame.add(swing.JButton("Aaron's Second Project", actionPerformed=self.Aaron_Second_Project))
-      smallFrame.add(swing.JButton("ex", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("Peter's First Project", actionPerformed=self.Peter_First_Project))
       smallFrame.add(swing.JButton("Peter's Second Project", actionPerformed=self.Peter_Second_Project))
-      smallFrame.add(swing.JButton("5", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("ex", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("TEST", actionPerformed=self.testing))
       self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
       
       self.pack()
@@ -161,12 +162,13 @@ class FileContentsViewer(swing.JFrame):
       #mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
       #mywindow.contentPane.add(swing.JTextField("Hello"))
    #END DEF
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
 # OUR PREVIOUS PROJECTS ARE FUNCTIONS BELOW
    
    # DESC: ..
@@ -252,6 +254,115 @@ class FileContentsViewer(swing.JFrame):
       blockingPlay(file2)
       blockingPlay(file3)
    #END DEF
+
+
+   # DESC: Making array of note frequencies based on piano key number (left to right, 0 to 88).
+   #       The resulting frequencies are between 27.5 and 4186.01 Hz.
+   #       This functions is used by Peter_First_Project()
+   #
+   # INPUTS:   none
+   # OUTPUTS:  List, where each index is a key number, and points to the frequency
+   def makeNotesArray(self):
+      daNotes = {}
+      for i in range(1,89):
+         base = pow(2, (1.0/12))
+         power = i-49
+         freq = pow(base, power) * 440.0
+         daNotes[i] = freq
+      return daNotes
+   #END DEF
+
+
+   # DESC: This takes the user's chosen picture, and converts it into an audio file
+   #
+   # INPUTS:   picture file
+   # OUTPUTS:  wav audio file
+   def Peter_First_Project(self, event):
+      import random
+      import math
+      import string   ## USED TO GET FILE NAME
+      import shutil   ## USED TO COPY AND DELETE IMAGES FOLDER
+      #Getting the file chosen
+      selected = self.files.getSelectedIndices()
+      selectedFile = self.files.getModel( ).getElementAt( selected[0])
+      selectedFile = self.currentDirectory + "/"+ selectedFile
+      file_name = selectedFile[selectedFile.rfind("/")+1:]
+      #Checking that the file is a picture file
+      fileExt = file_name.split(".")[-1]
+      if ((fileExt != "jpg") and (fileExt != "JPG") and
+          (fileExt != "png") and (fileExt != "PNG")):
+         mywindow = swing.JFrame(size=(600,100))
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+         mywindow.contentPane.add(swing.JLabel(file_name+" is not a picture file"))
+         mywindow.setLocationByPlatform(true)
+         mywindow.visible = true
+         return None
+      continueThis = requestString("This function can take a while to run.\n" + 
+                                    "Assume about 1 minute of processing per megabyte of the picture file.\n" + 
+                                    "Continue? (y/n)")
+      if continueThis != "y":
+         return None
+      # --------------------
+      ## Importing the picture and making the note array
+      picture = makePicture(selectedFile)
+      totalPixels = picture.getHeight() * picture.getWidth()
+      daNotes = self.makeNotesArray()
+      ## Calculating the total number of samples in this song, based
+      length = requestIntegerInRange("Please specify how long you want the song to be, in seconds: ", 1, 5000)
+      rate = 44100 ## 44100 samples of the sound per second
+      totalSamples = rate*length
+      notesPerSecond = requestIntegerInRange("Please specify how many notes per second you want played,\n"+
+                                              " between 2 and 16 (recommend 4 -> 10): ", 2, 16)
+      sampsPerNote = int(rate/notesPerSecond)
+      pixelsPerNote = int(totalPixels/(length*notesPerSecond))
+      sound = makeEmptySound(totalSamples, rate)
+      SAMPS = getSamples(sound)
+      PIXS = getPixels(picture)
+      ## This is where the sound starts (sample 0)
+      lastIndex = 0
+      lastPixelIndex = 0
+      noteLow = requestIntegerInRange("Please give a number between 1 and 88,\n"+
+                                       "which is the lowest key number\n(recommend 32)", 1, 88)
+      noteHigh = requestIntegerInRange("Please give a number between "+str(noteLow)+" and 88,\n"+
+                                        "which is the highest key number\n(recommend 64)", noteLow, 88)
+      ## While looping through the sound by lengths of notes
+      ## Last index is increased at the end of the while
+      while lastIndex<(totalSamples-sampsPerNote) and lastPixelIndex<(totalPixels-pixelsPerNote):
+         ## This part analyzes the pixels between the last index used in the previous
+         ## iteration and that index plus the number of pixels per note.
+         ## The average is calculated, and then used to get the index of the note frequency
+         pixelsValueTotal = 0
+         for i in range(0, pixelsPerNote):
+            pixel = PIXS[lastPixelIndex + i]
+            pixelsValueTotal += float(pixel.getRed()+pixel.getGreen()+pixel.getBlue())/(256*3)
+         #END FOR
+         lastPixelIndex += pixelsPerNote
+         noteIndex = int((pixelsValueTotal/pixelsPerNote)*(noteHigh-noteLow))
+         noteFreq = daNotes[noteLow+noteIndex]
+         ## Splitting up the samples into sections of how
+         ## many waves per note, samples per wave, and sample per
+         ## quarter wave
+         numWavesPerNote = int( (1.0/notesPerSecond)*noteFreq )
+         sampsPerWave = sampsPerNote/numWavesPerNote
+         sampsPerQWave = sampsPerWave/4
+         value = float(random.randint(22000,26000)) / sampsPerQWave
+         for x in range(numWavesPerNote):
+            ## Offset keeps track of which wave we are at
+            offset = lastIndex + (x*sampsPerWave)
+            ## ModValue is what is used to create the disipating wave form
+            modValue = value * (pow((0.977742), x) + 0.2242)
+            for j in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*0) + j ].value = int(modValue * j)
+            for k in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*1) + k ].value = int(modValue * (sampsPerQWave-k))
+            for m in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*2) + m ].value = int(-1 * modValue * m)
+            for n in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*3) + n ].value = int(-1 * modValue * (sampsPerQWave-n))
+         #END FOR
+         lastIndex += (x*sampsPerWave)
+      writeSoundTo(sound, self.currentDirectory + "/" + file_name.split(".")[0] + "_sound.wav")
+   #END DEF
    
    
    # DESC: This converts a given .wav file into a visualization of the waveform 
@@ -277,7 +388,7 @@ class FileContentsViewer(swing.JFrame):
          mywindow.visible = true
          return None
       continueThis = requestString("This function can take a while to run.\n" + 
-                                    "Assume about 1.5 minutes or processing per 1 minute of audio.\n" + 
+                                    "Assume about 1.5 minutes of processing per 1 minute of audio.\n" + 
                                     "Continue? (y/n)")
       if continueThis != "y":
          return None
@@ -403,6 +514,12 @@ class FileContentsViewer(swing.JFrame):
             deleted = false
       #END IF
    #END DEF
+   
+   
+   
+   
+   
+   
 #END CLASS
 
 
