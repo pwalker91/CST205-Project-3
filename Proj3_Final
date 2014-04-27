@@ -1,5 +1,5 @@
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Scrollable File Contents Viewer class
 class FileContentsViewer(swing.JFrame):
    import os
@@ -39,9 +39,9 @@ class FileContentsViewer(swing.JFrame):
       smallFrame = swing.JPanel(java.awt.GridLayout(0,1), name="ButtonGrid")
       smallFrame.add(swing.JButton("Aaron's First Project", actionPerformed=self.Aaron_First_Project))
       smallFrame.add(swing.JButton("Aaron's Second Project", actionPerformed=self.Aaron_Second_Project))
-      smallFrame.add(swing.JButton("ex", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("Peter's First Project", actionPerformed=self.Peter_First_Project))
       smallFrame.add(swing.JButton("Peter's Second Project", actionPerformed=self.Peter_Second_Project))
-      smallFrame.add(swing.JButton("5", actionPerformed=self.testing))
+      smallFrame.add(swing.JButton("TEST", actionPerformed=self.testing))
       self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
       
       self.pack()
@@ -61,13 +61,11 @@ class FileContentsViewer(swing.JFrame):
           selectedFile.endswith(".png") or selectedFile.endswith(".PNG")
           ):
          pic = makePicture(selectedFile)
-         show(pic)
+         openPictureTool(pic)
       #END IF
       if selectedFile.endswith(".wav"):
          snd = makeSound(selectedFile)
-         play(snd)
-         while raw_input("Press Enter to Stop:"):
-            stopPlaying(snd)
+         openSoundTool(snd)
          #END WHILE
       #END IF
    #END DEF
@@ -120,11 +118,14 @@ class FileContentsViewer(swing.JFrame):
                cancelCount += 1
          #END WHILE
          if (cancelCount == 3):
-            if os.path.isdir( os.path.expanduser("~")+"\Desktop" ):
-               self.currentDirectory = os.path.expanduser("~")+"\Desktop"
+            if (self.currentDirectory == ""):
+               if os.path.isdir( os.path.expanduser("~")+"/Desktop" ):
+                  self.currentDirectory = os.path.expanduser("~")+"/Desktop"
+               else:
+                  self.currentDirectory = os.path.expanduser("~")+"/desktop"
+               #END IF/ELSE
             else:
-               self.currentDirectory = os.path.expanduser("~")+"\desktop"
-            #END IF/ELSE
+               keeping_the_current_directory = true
          else:
             self.currentDirectory = str(chooser.getSelectedFile())
          #END IF/ELSE
@@ -136,7 +137,9 @@ class FileContentsViewer(swing.JFrame):
       for entry in tempFilesList:
          if ( (entry[0:1] == ".") or 
               (os.path.isdir(self.currentDirectory+"/"+entry)) or
-              ((entry[-4:] != ".jpg") and (entry[-4:] != ".wav"))
+              ( (entry[-4:] != ".wav") and (entry[-4:] != ".WAV") and
+                (entry[-4:] != ".jpg") and (entry[-4:] != ".png") and (entry[-4:] != ".gif") and
+                (entry[-4:] != ".JPG") and (entry[-4:] != ".PNG") and (entry[-4:] != ".GIF") )
             ):
             toRemove.append(entry)
          #END IF
@@ -144,7 +147,6 @@ class FileContentsViewer(swing.JFrame):
       for removing in toRemove:
          tempFilesList.remove(removing)
       #END FOR
-      
       return tempFilesList
    #END DEF
    
@@ -154,19 +156,21 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   none
    # OUTPUTS:  a JFrame window with some simple text
    def testing(self, event):
-      mywindow = swing.JFrame()
-      mywindow.contentPane.add(swing.JLabel("I am here"), java.awt.BorderLayout.CENTER)
-      mywindow.visible = true
-      #mywindow = swing.JFrame()
-      #mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
-      #mywindow.contentPane.add(swing.JTextField(index), java.awt.BorderLayout.CENTER)
+      #mywindow = swing.JFrame(size=(600,100))
+      #mywindow.contentPane.add(swing.JLabel("I am here"), java.awt.BorderLayout.CENTER)
+      #mywindow.visible = true
+      mywindow = swing.JFrame(size=(600,100))
+      mywindow.setLocationByPlatform(true)
+      mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+      mywindow.contentPane.add(swing.JTextField("Hello, User."))
    #END DEF
-   
-   
-   
-   
-   
-   
+
+
+
+
+
+
+
 # OUR PREVIOUS PROJECTS ARE FUNCTIONS BELOW
    
    # DESC: Uses selected audio file to create a picture. Will then create a video of the picture creating itself.
@@ -286,6 +290,115 @@ class FileContentsViewer(swing.JFrame):
       blockingPlay(file2)
       blockingPlay(file3)
    #END DEF
+
+
+   # DESC: Making array of note frequencies based on piano key number (left to right, 0 to 88).
+   #       The resulting frequencies are between 27.5 and 4186.01 Hz.
+   #       This functions is used by Peter_First_Project()
+   #
+   # INPUTS:   none
+   # OUTPUTS:  List, where each index is a key number, and points to the frequency
+   def makeNotesArray(self):
+      daNotes = {}
+      for i in range(1,89):
+         base = pow(2, (1.0/12))
+         power = i-49
+         freq = pow(base, power) * 440.0
+         daNotes[i] = freq
+      return daNotes
+   #END DEF
+
+
+   # DESC: This takes the user's chosen picture, and converts it into an audio file
+   #
+   # INPUTS:   picture file
+   # OUTPUTS:  wav audio file
+   def Peter_First_Project(self, event):
+      import random
+      import math
+      import string   ## USED TO GET FILE NAME
+      import shutil   ## USED TO COPY AND DELETE IMAGES FOLDER
+      #Getting the file chosen
+      selected = self.files.getSelectedIndices()
+      selectedFile = self.files.getModel( ).getElementAt( selected[0])
+      selectedFile = self.currentDirectory + "/"+ selectedFile
+      file_name = selectedFile[selectedFile.rfind("/")+1:]
+      #Checking that the file is a picture file
+      fileExt = file_name.split(".")[-1]
+      if ((fileExt != "jpg") and (fileExt != "JPG") and
+          (fileExt != "png") and (fileExt != "PNG")):
+         mywindow = swing.JFrame(size=(600,100))
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+         mywindow.contentPane.add(swing.JLabel(file_name+" is not a picture file"))
+         mywindow.setLocationByPlatform(true)
+         mywindow.visible = true
+         return None
+      continueThis = requestString("This function can take a while to run.\n" + 
+                                    "Assume about 1 minute of processing per megabyte of the picture file.\n" + 
+                                    "Continue? (y/n)")
+      if continueThis != "y":
+         return None
+      # --------------------
+      ## Importing the picture and making the note array
+      picture = makePicture(selectedFile)
+      totalPixels = picture.getHeight() * picture.getWidth()
+      daNotes = self.makeNotesArray()
+      ## Calculating the total number of samples in this song, based
+      length = requestIntegerInRange("Please specify how long you want the song to be, in seconds: ", 1, 5000)
+      rate = 44100 ## 44100 samples of the sound per second
+      totalSamples = rate*length
+      notesPerSecond = requestIntegerInRange("Please specify how many notes per second you want played,\n"+
+                                              " between 2 and 16 (recommend 4 -> 10): ", 2, 16)
+      sampsPerNote = int(rate/notesPerSecond)
+      pixelsPerNote = int(totalPixels/(length*notesPerSecond))
+      sound = makeEmptySound(totalSamples, rate)
+      SAMPS = getSamples(sound)
+      PIXS = getPixels(picture)
+      ## This is where the sound starts (sample 0)
+      lastIndex = 0
+      lastPixelIndex = 0
+      noteLow = requestIntegerInRange("Please give a number between 1 and 88,\n"+
+                                       "which is the lowest key number\n(recommend 32)", 1, 88)
+      noteHigh = requestIntegerInRange("Please give a number between "+str(noteLow)+" and 88,\n"+
+                                        "which is the highest key number\n(recommend 64)", noteLow, 88)
+      ## While looping through the sound by lengths of notes
+      ## Last index is increased at the end of the while
+      while lastIndex<(totalSamples-sampsPerNote) and lastPixelIndex<(totalPixels-pixelsPerNote):
+         ## This part analyzes the pixels between the last index used in the previous
+         ## iteration and that index plus the number of pixels per note.
+         ## The average is calculated, and then used to get the index of the note frequency
+         pixelsValueTotal = 0
+         for i in range(0, pixelsPerNote):
+            pixel = PIXS[lastPixelIndex + i]
+            pixelsValueTotal += float(pixel.getRed()+pixel.getGreen()+pixel.getBlue())/(256*3)
+         #END FOR
+         lastPixelIndex += pixelsPerNote
+         noteIndex = int((pixelsValueTotal/pixelsPerNote)*(noteHigh-noteLow))
+         noteFreq = daNotes[noteLow+noteIndex]
+         ## Splitting up the samples into sections of how
+         ## many waves per note, samples per wave, and sample per
+         ## quarter wave
+         numWavesPerNote = int( (1.0/notesPerSecond)*noteFreq )
+         sampsPerWave = sampsPerNote/numWavesPerNote
+         sampsPerQWave = sampsPerWave/4
+         value = float(random.randint(22000,26000)) / sampsPerQWave
+         for x in range(numWavesPerNote):
+            ## Offset keeps track of which wave we are at
+            offset = lastIndex + (x*sampsPerWave)
+            ## ModValue is what is used to create the disipating wave form
+            modValue = value * (pow((0.977742), x) + 0.2242)
+            for j in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*0) + j ].value = int(modValue * j)
+            for k in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*1) + k ].value = int(modValue * (sampsPerQWave-k))
+            for m in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*2) + m ].value = int(-1 * modValue * m)
+            for n in range(sampsPerQWave):
+               SAMPS[offset + (sampsPerQWave*3) + n ].value = int(-1 * modValue * (sampsPerQWave-n))
+         #END FOR
+         lastIndex += (x*sampsPerWave)
+      writeSoundTo(sound, self.currentDirectory + "/" + file_name.split(".")[0] + "_sound.wav")
+   #END DEF
    
    
    # DESC: This converts a given .wav file into a visualization of the waveform 
@@ -293,34 +406,39 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   wav file
    # OUTPUTS:  avi file (and potentially a series of jpg images)
-   def Peter_Second_Project():
-      #Getting the file chosen
-      selected = self.files.getSelectedIndices()
-      selectedFile = self.files.getModel( ).getElementAt( selected[0])
-      selectedFile = self.currentDirectory+ "/"+ selectedFile
-      file = selectedFile
-      file_name = file[string.rfind(file,"/")+1:]
-      if file_name.split(".")[1] != "wav":
-         mywindow = swing.JFrame()
-         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
-         mywindow.contentPane.add(swing.JTextField(index), java.awt.BorderLayout.CENTER)
-         mywindow.setLocationByPlatform(true)
-         mywindow.visible = true
-         return None
-      # -----------
+   def Peter_Second_Project(self, event):
       import random
       import string   ## USED TO GET FILE NAME
       import shutil   ## USED TO COPY AND DELETE IMAGES FOLDER
+      #Getting the file chosen
+      selected = self.files.getSelectedIndices()
+      selectedFile = self.files.getModel( ).getElementAt( selected[0])
+      selectedFile = self.currentDirectory + "/"+ selectedFile
+      file_name = selectedFile[selectedFile.rfind("/")+1:]
+      #Checking that the file is a wav file
+      if (file_name.split(".")[-1] != "wav") and (file_name.split(".")[-1] != "WAV"):
+         mywindow = swing.JFrame(size=(600,100))
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+         mywindow.contentPane.add(swing.JLabel(file_name+" is not a wav file"))
+         mywindow.setLocationByPlatform(true)
+         mywindow.visible = true
+         return None
+      continueThis = requestString("This function can take a while to run.\n" + 
+                                    "Assume about 1.5 minutes of processing per 1 minute of audio.\n" + 
+                                    "Continue? (y/n)")
+      if continueThis != "y":
+         return None
+      # --------------------
       folder = "/visualizer_images/"
       #This creates the folder at the specified location above
       # If the folder is already created, it will first delete it, then create it again
       try:
-         os.makedirs(self.currentDirectory+folder)
+         os.makedirs(self.currentDirectory + folder)
       except OSError:
-         shutil.rmtree(self.currentDirectory+folder)
-         os.makedirs(self.currentDirectory+folder)
+         shutil.rmtree(self.currentDirectory + folder)
+         os.makedirs(self.currentDirectory + folder)
       #Getting some basic information about the sound
-      SOUND = makeSound(file)
+      SOUND = makeSound(selectedFile)
       rate = getSamplingRate(SOUND)
       SAMPLES = getSamples(SOUND)
       numSamples = getNumSamples(SOUND)
@@ -362,15 +480,10 @@ class FileContentsViewer(swing.JFrame):
          averagesArray.append(toBeAppended)
       #This while loop will iterate through the sound, creating the appropiate image for the
       # current section of time
-      while sampleIndex<( numSamples+(samplesPerSection*(lastSecondSectionCount+nextHalfSecondSectionCount)) ):
+      while sampleIndex < ( numSamples+(samplesPerSection*(pixelsPerSection*nextHalfSecondSectionCount)) ):
          picture = makeEmptyPicture(width, height, black)
          soundColor = white
          lineColor = red
-         currentPercentage = int((float(sampleIndex)/numSamples) *100)
-         if currentPercentage != lastPercentage:
-            printNow("Working.... "+str(currentPercentage)+"%")
-            lastPercentage = currentPercentage
-         #END IF
          #Adding the red line in the horizontal center of the pictures
          soundSyncLine = int((float(5)/8)*width)
          picture.addLine(lineColor, 0, (height/2), width, (height/2))
@@ -410,56 +523,40 @@ class FileContentsViewer(swing.JFrame):
          frameIndex += 1
          #This section is for naming the picture, and padding the appropiate number of 0's
          if frameIndex<10:
-            writePictureTo(picture, save_path+folder+"frame0000"+str(frameIndex)+".jpg")
+            writePictureTo(picture, self.currentDirectory + folder + "frame0000" + str(frameIndex) + ".jpg")
          elif frameIndex<100:
-            writePictureTo(picture, save_path+folder+"frame000"+str(frameIndex)+".jpg")
+            writePictureTo(picture, self.currentDirectory + folder + "frame000" + str(frameIndex) + ".jpg")
          elif frameIndex<1000:
-            writePictureTo(picture, save_path+folder+"frame00"+str(frameIndex)+".jpg")  
+            writePictureTo(picture, self.currentDirectory + folder + "frame00" + str(frameIndex) + ".jpg")  
          elif frameIndex<10000:
-            writePictureTo(picture, save_path+folder+"frame0"+str(frameIndex)+".jpg")
+            writePictureTo(picture, self.currentDirectory + folder + "frame0" + str(frameIndex) + ".jpg")
          else:
-            writePictureTo(picture, save_path+folder+"frame"+str(frameIndex)+".jpg")
+            writePictureTo(picture, self.currentDirectory + folder + "frame" + str(frameIndex) + ".jpg")
       #END WHILE
       #This is where the movie is created
-      printNow("Creating Movie")
-      mov = makeMovieFromInitialFile(save_path+folder+"frame00001.jpg")
-      writeAVI(mov, "/Users/peterwalker/Desktop/"+file_name[:-4]+".avi", framesPerSec)
+      mov = makeMovieFromInitialFile(self.currentDirectory + folder + "frame00001.jpg")
+      writeAVI(mov, self.currentDirectory + "/" + file_name[:-4] + ".avi", framesPerSec)
       
-      printNow("Would you like to copy the folder of images to the desktop?")
-      response = requestString("(y/n) ")
-      while response != "y" and response != "n":
-         printNow("You did not input 'y' or 'n'")
-         response = raw_input("(y/n) ")
+      response = requestString("Would you like to keep the folder of images? (y/n) ")
+      while (response != "y") and (response != "n"):
+         response = requestString("Would you like to keep the folder of images? (y/n) ")
    
          ### MOVE IMAGES FOLDER WITH FILENAME APPENDED
-      if response == 'y':
+      if response == 'n':
          try:
-            shutil.copytree(save_path+folder, desktop+folder[:-1]+"_"+file_name[:10]+"/")
+            shutil.rmtree(self.currentDirectory+folder)
          except OSError:
-            moved = false
+            deleted = false
       #END IF
-   
-         ### DELETEING IMAGES FOLDER
-      try:
-         shutil.rmtree(save_path+folder)
-      except OSError:
-         deleted = false
+      return None
    #END DEF
 #END CLASS
 
 
-
-
-
-
-
-
-
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # MAIN
 import time
 printNow("Please use this GUI to run some of our previous projects")
 time.sleep(1)
 fcv = FileContentsViewer()
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
