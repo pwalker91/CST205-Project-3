@@ -9,6 +9,9 @@ class FileContentsViewer(swing.JFrame):
    # Class vars
    currentDirectory = ""
    files = None
+   picture = ""
+   pictureExts = ["jpg","jpeg","gif","png","JPG","JPEG","GIF","PNG"]
+   soundExts = ["wav", "WAV"]
    # ----------------
    
    
@@ -41,6 +44,7 @@ class FileContentsViewer(swing.JFrame):
       smallFrame.add(swing.JButton("Aaron's Second Project", actionPerformed=self.Aaron_Second_Project))
       smallFrame.add(swing.JButton("Peter's First Project", actionPerformed=self.Peter_First_Project))
       smallFrame.add(swing.JButton("Peter's Second Project", actionPerformed=self.Peter_Second_Project))
+      smallFrame.add(swing.JButton("Some Fun Picture Filters", actionPerformed=self.filtersMenu))
       smallFrame.add(swing.JButton("TEST", actionPerformed=self.testing))
       self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
       
@@ -112,12 +116,9 @@ class FileContentsViewer(swing.JFrame):
          chooser.setDialogTitle("Select Folder to Show File List")
          val = None
          cancelCount = 0
-         while (val != swing.JFileChooser.APPROVE_OPTION) and (cancelCount < 3):
-            val = chooser.showDialog(self, None)
-            if (val == swing.JFileChooser.CANCEL_OPTION):
-               cancelCount += 1
+         val = chooser.showDialog(self, None)
          #END WHILE
-         if (cancelCount == 3):
+         if (val == swing.JFileChooser.CANCEL_OPTION):
             if (self.currentDirectory == ""):
                if os.path.isdir( os.path.expanduser("~")+"/Desktop" ):
                   self.currentDirectory = os.path.expanduser("~")+"/Desktop"
@@ -135,11 +136,9 @@ class FileContentsViewer(swing.JFrame):
       tempFilesList = os.listdir(self.currentDirectory)
       toRemove = []
       for entry in tempFilesList:
-         if ( (entry[0:1] == ".") or 
-              (os.path.isdir(self.currentDirectory+"/"+entry)) or
-              ( (entry[-4:] != ".wav") and (entry[-4:] != ".WAV") and
-                (entry[-4:] != ".jpg") and (entry[-4:] != ".png") and (entry[-4:] != ".gif") and
-                (entry[-4:] != ".JPG") and (entry[-4:] != ".PNG") and (entry[-4:] != ".GIF") )
+         if ((entry[0:1] == ".") or 
+             (os.path.isdir(self.currentDirectory+"/"+entry)) or
+             ( (entry.split(".")[-1] not in self.pictureExts) and (entry.split(".")[-1] not in self.soundExts) )
             ):
             toRemove.append(entry)
          #END IF
@@ -159,41 +158,112 @@ class FileContentsViewer(swing.JFrame):
       #mywindow = swing.JFrame(size=(600,100))
       #mywindow.contentPane.add(swing.JLabel("I am here"), java.awt.BorderLayout.CENTER)
       #mywindow.visible = true
-      mywindow = swing.JFrame(size=(600,100))
+      mywindow = swing.JFrame(title="TEST OUTPUT",size=(600,100))
       mywindow.setLocationByPlatform(true)
-      mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+      mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
       mywindow.contentPane.add(swing.JTextField("Hello, User."))
+      mywindow.visible = true
+   #END DEF
+
+
+   # DESC: This creates a GUI with which the user can choose a filter with which
+   #       to alter their image. If they like their new image, they can click save
+   #
+   # INPUTS:   none
+   # OUTPUTS:  JFrame with filter buttons
+   def filtersMenu(self, event):
+      #FOR TESTING
+      testwin = swing.JFrame(title="TEST OUTPUT",size=(600,100))
+      testwin.setLocationByPlatform(true)
+      testwin.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
+      
+      import random
+      import datetime
+      import string   ## USED TO GET FILE NAME
+      import shutil   ## USED TO COPY AND DELETE IMAGES FOLDER
+      #Getting the file chosen
+      selected = self.files.getSelectedIndices()
+      testwin.contentPane.add(swing.JTextField( repr(selected) ))
+      testwin.visible = true
+      """
+      selectedFile = self.files.getModel( ).getElementAt( selected[0])
+      selectedFile = self.currentDirectory + "/"+ selectedFile
+      file_name = selectedFile[selectedFile.rfind("/")+1:]
+      #Checking that the file is a picture file
+      fileExt = file_name.split(".")[-1]
+      if (fileExt not in self.pictureExts):
+         mywindow = swing.JFrame(size=(600,100))
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
+         mywindow.contentPane.add(swing.JLabel(file_name+" is not a picture file"))
+         mywindow.setLocationByPlatform(true)
+         mywindow.visible = true
+         return None
+      # --------------------
+      self.picture = makePicture(selectedFile)
+      #repaint(self.picture)
+      
+      #self.files = swing.JList(filesList)
+      #pane = swing.JScrollPane(self.files, name="ScrollPane", size=(400,200))
+      #self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
+      #fileView = swing.JButton("View Contents", name="FileView", actionPerformed = self.fileView)
+      #self.contentPane.add(fileView, java.awt.BorderLayout.WEST)
+      #changeDir = swing.JButton("Change Directory", name="ChangeDir", actionPerformed = self.changeDirectory)
+      #self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
+      #dirHeader = swing.JLabel(self.currentDirectory, swing.JLabel.CENTER, name="Header")
+      #self.contentPane.add(dirHeader, java.awt.BorderLayout.NORTH)
+      
+      smallFrame = swing.JFrame(title="Picture Filters Galore!", size=(400,400))
+      smallFrame.contentPane.layout = java.awt.GridLayout(0,3)
+      smallFrame.contentPane.add(swing.JButton("Filter 1", actionPerformed=self.testing))
+      smallFrame.contentPane.add(swing.JButton("Filter 2", actionPerformed=self.testing))
+      smallFrame.contentPane.add(swing.JButton("Filter 3", actionPerformed=self.testing))
+      smallFrame.contentPane.add(swing.JButton("Show Picture", actionPerformed=repaint(self.picture)))
+      smallFrame.contentPane.add(swing.JButton("Save Picture", 
+                                    actionPerformed=writePictureTo(self.picture, selectedFile.rsplit(".", -1)[0]
+                                                                                 +str(datetime.datetime.now())
+                                                                                 +selectedFile.rsplit(".", 1)[-1])))
+      smallFrame.setLocationByPlatform(true)
+      smallFrame.pack()
+      smallFrame.visible = true
+      """
    #END DEF
 
 
 
 
-
-
-
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # OUR PREVIOUS PROJECTS ARE FUNCTIONS BELOW
-   
    # DESC: Uses selected audio file to create a picture. Will then create a video of the picture creating itself.
    #
    # INPUTS:   .wav file from directory list
    # OUTPUTS:  picture of audio file, video creating picture of audio file
    def Aaron_First_Project(self, event):
-      #Determines directory, sets it, then creates it if it doesn't exist.
+      import string   ## USED TO GET FILE NAME
+      #Getting the file chosen
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
-      selectedFile = self.currentDirectory+ "/"+ selectedFile
+      selectedFile = self.currentDirectory + "/"+ selectedFile
+      file_name = selectedFile[selectedFile.rfind("/")+1:]
+      #Checking that the file is a wav file
+      fileExt = file_name.split(".")[-1]
+      if (fileExt not in self.soundExts):
+         mywindow = swing.JFrame(size=(600,100))
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
+         mywindow.contentPane.add(swing.JLabel(file_name+" is not a wav file"))
+         mywindow.setLocationByPlatform(true)
+         mywindow.visible = true
+         return None
       dir=self.currentDirectory+'\\pictures\\'
       if not os.path.exists(dir):
         os.makedirs(dir)
-      #END IF
+      # --------------------
       #Variable declaration
       x=0
       y=0
       value=0
       data = 300
       picture=makeEmptyPicture(data,data)
-      file=selectedFile
-      sound=makeSound(file)
+      sound=makeSound(selectedFile)
       overall=(getNumSamples(sound))/(data*data)
       int(overall)
       pixelArray=getPixels(picture)
@@ -255,13 +325,23 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   .wav file
    # OUTPUTS:  The playing of sped up audio sounds.
    def Aaron_Second_Project(self, event):
-      #Sets directory and ability to use file from list.
+      import string   ## USED TO GET FILE NAME
+      #Getting the file chosen
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
-      selectedFile = self.currentDirectory+ "/"+ selectedFile
-      #Variable declarations
-      s = selectedFile
-      sound = makeSound(s)
+      selectedFile = self.currentDirectory + "/"+ selectedFile
+      file_name = selectedFile[selectedFile.rfind("/")+1:]
+      #Checking that the file is a wav file
+      fileExt = file_name.split(".")[-1]
+      if (fileExt not in self.soundExts):
+         mywindow = swing.JFrame(size=(600,100))
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
+         mywindow.contentPane.add(swing.JLabel(file_name+" is not a wav file"))
+         mywindow.setLocationByPlatform(true)
+         mywindow.visible = true
+         return None
+      # --------------------
+      sound = makeSound(selectedFile)
       soundValue = 0
       #Creates values for different pieces of audio files and the files the audio will be stored in.
       first = int(getLength(sound)/3)
@@ -292,23 +372,6 @@ class FileContentsViewer(swing.JFrame):
    #END DEF
 
 
-   # DESC: Making array of note frequencies based on piano key number (left to right, 0 to 88).
-   #       The resulting frequencies are between 27.5 and 4186.01 Hz.
-   #       This functions is used by Peter_First_Project()
-   #
-   # INPUTS:   none
-   # OUTPUTS:  List, where each index is a key number, and points to the frequency
-   def makeNotesArray(self):
-      daNotes = {}
-      for i in range(1,89):
-         base = pow(2, (1.0/12))
-         power = i-49
-         freq = pow(base, power) * 440.0
-         daNotes[i] = freq
-      return daNotes
-   #END DEF
-
-
    # DESC: This takes the user's chosen picture, and converts it into an audio file
    #
    # INPUTS:   picture file
@@ -325,16 +388,15 @@ class FileContentsViewer(swing.JFrame):
       file_name = selectedFile[selectedFile.rfind("/")+1:]
       #Checking that the file is a picture file
       fileExt = file_name.split(".")[-1]
-      if ((fileExt != "jpg") and (fileExt != "JPG") and
-          (fileExt != "png") and (fileExt != "PNG")):
+      if (fileExt not in self.pictureExts):
          mywindow = swing.JFrame(size=(600,100))
-         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
          mywindow.contentPane.add(swing.JLabel(file_name+" is not a picture file"))
          mywindow.setLocationByPlatform(true)
          mywindow.visible = true
          return None
       continueThis = requestString("This function can take a while to run.\n" + 
-                                    "Assume about 1 minute of processing per megabyte of the picture file.\n" + 
+                                    "Assume about 1 minute of processing per megabyte of data.\n" + 
                                     "Continue? (y/n)")
       if continueThis != "y":
          return None
@@ -361,6 +423,13 @@ class FileContentsViewer(swing.JFrame):
                                        "which is the lowest key number\n(recommend 32)", 1, 88)
       noteHigh = requestIntegerInRange("Please give a number between "+str(noteLow)+" and 88,\n"+
                                         "which is the highest key number\n(recommend 64)", noteLow, 88)
+      ## This part is calculating the frequencies of the piano keys based on the key number (1 is low, 88 is high)
+      daNotes = {}
+      for i in range(1,89):
+         base = pow(2, (1.0/12))
+         power = i-49
+         freq = pow(base, power) * 440.0
+         daNotes[i] = freq
       ## While looping through the sound by lengths of notes
       ## Last index is increased at the end of the while
       while lastIndex<(totalSamples-sampsPerNote) and lastPixelIndex<(totalPixels-pixelsPerNote):
@@ -416,9 +485,10 @@ class FileContentsViewer(swing.JFrame):
       selectedFile = self.currentDirectory + "/"+ selectedFile
       file_name = selectedFile[selectedFile.rfind("/")+1:]
       #Checking that the file is a wav file
-      if (file_name.split(".")[-1] != "wav") and (file_name.split(".")[-1] != "WAV"):
+      fileExt = file_name.split(".")[-1]
+      if (fileExt not in self.soundExts):
          mywindow = swing.JFrame(size=(600,100))
-         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
+         mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
          mywindow.contentPane.add(swing.JLabel(file_name+" is not a wav file"))
          mywindow.setLocationByPlatform(true)
          mywindow.visible = true
@@ -551,6 +621,10 @@ class FileContentsViewer(swing.JFrame):
       return None
    #END DEF
 #END CLASS
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
