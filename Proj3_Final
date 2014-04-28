@@ -10,6 +10,7 @@ class FileContentsViewer(swing.JFrame):
    currentDirectory = ""
    files = None
    picture = ""
+   currentPicturePath = ""
    pictureExts = ["jpg","jpeg","gif","png","JPG","JPEG","GIF","PNG"]
    soundExts = ["wav", "WAV"]
    # ----------------
@@ -57,7 +58,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   none
    # OUTPUTS:  showing the chosen file
-   def fileView(self, event):
+   def fileView(self, event=""):
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
       selectedFile = self.currentDirectory+ "/"+ selectedFile
@@ -79,7 +80,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   none
    # OUTPUTS:  none
-   def changeDirectory(self, event):
+   def changeDirectory(self, event=""):
       components = self.contentPane.getComponents()
       index = 0
       for elem in components:
@@ -154,7 +155,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   none
    # OUTPUTS:  a JFrame window with some simple text
-   def testing(self, event):
+   def testing(self, event=""):
       #mywindow = swing.JFrame(size=(600,100))
       #mywindow.contentPane.add(swing.JLabel("I am here"), java.awt.BorderLayout.CENTER)
       #mywindow.visible = true
@@ -171,21 +172,10 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   none
    # OUTPUTS:  JFrame with filter buttons
-   def filtersMenu(self, event):
-      #FOR TESTING
-      testwin = swing.JFrame(title="TEST OUTPUT",size=(600,100))
-      testwin.setLocationByPlatform(true)
-      testwin.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
-      
-      import random
-      import datetime
+   def filtersMenu(self, event=""):
       import string   ## USED TO GET FILE NAME
-      import shutil   ## USED TO COPY AND DELETE IMAGES FOLDER
       #Getting the file chosen
       selected = self.files.getSelectedIndices()
-      testwin.contentPane.add(swing.JTextField( repr(selected) ))
-      testwin.visible = true
-      """
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
       selectedFile = self.currentDirectory + "/"+ selectedFile
       file_name = selectedFile[selectedFile.rfind("/")+1:]
@@ -198,10 +188,9 @@ class FileContentsViewer(swing.JFrame):
          mywindow.setLocationByPlatform(true)
          mywindow.visible = true
          return None
-      # --------------------
       self.picture = makePicture(selectedFile)
-      #repaint(self.picture)
-      
+      self.currentPicturePath = selectedFile
+      # --------------------
       #self.files = swing.JList(filesList)
       #pane = swing.JScrollPane(self.files, name="ScrollPane", size=(400,200))
       #self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
@@ -212,20 +201,35 @@ class FileContentsViewer(swing.JFrame):
       #dirHeader = swing.JLabel(self.currentDirectory, swing.JLabel.CENTER, name="Header")
       #self.contentPane.add(dirHeader, java.awt.BorderLayout.NORTH)
       
-      smallFrame = swing.JFrame(title="Picture Filters Galore!", size=(400,400))
-      smallFrame.contentPane.layout = java.awt.GridLayout(0,3)
-      smallFrame.contentPane.add(swing.JButton("Filter 1", actionPerformed=self.testing))
-      smallFrame.contentPane.add(swing.JButton("Filter 2", actionPerformed=self.testing))
-      smallFrame.contentPane.add(swing.JButton("Filter 3", actionPerformed=self.testing))
-      smallFrame.contentPane.add(swing.JButton("Show Picture", actionPerformed=repaint(self.picture)))
-      smallFrame.contentPane.add(swing.JButton("Save Picture", 
-                                    actionPerformed=writePictureTo(self.picture, selectedFile.rsplit(".", -1)[0]
-                                                                                 +str(datetime.datetime.now())
-                                                                                 +selectedFile.rsplit(".", 1)[-1])))
-      smallFrame.setLocationByPlatform(true)
-      smallFrame.pack()
-      smallFrame.visible = true
-      """
+      newFrame = swing.JFrame(title="Picture Filters Galore!", size=(400,400))
+      newFrame.contentPane.layout = java.awt.BorderLayout()
+      buttons = swing.JPanel(java.awt.GridLayout(0,3))
+      buttons.add(swing.JButton("Filter 1", actionPerformed=self.testing))
+      buttons.add(swing.JButton("Filter 2", actionPerformed=self.testing))
+      buttons.add(swing.JButton("Filter 3", actionPerformed=self.testing))
+      buttons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
+      buttons.add(swing.JButton("Save Picture", actionPerformed=self.savePicture))
+      newFrame.contentPane.add(buttons, java.awt.BorderLayout.CENTER)
+      newFrame.setLocationByPlatform(true)
+      newFrame.visible = true
+   #END DEF
+   
+   
+   # DESC: This refreshes the picture being shown
+   def refresh(self, event=""):
+      repaint(self.picture)
+      return None
+   #END DEF
+   
+   # DESC: This writes the current picture in self.picture into the current directory
+   def savePicture(self, event=""):
+      from datetime import datetime
+      import string
+      before = self.currentPicturePath[:self.currentPicturePath.rfind(".")]
+      after = self.currentPicturePath[self.currentPicturePath.rfind("."):]
+      now = str(datetime.now())
+      filePath = before + "__" + now[:now.rfind(".")] + after
+      writePictureTo(self.picture, filePath)
    #END DEF
 
 
@@ -237,7 +241,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   .wav file from directory list
    # OUTPUTS:  picture of audio file, video creating picture of audio file
-   def Aaron_First_Project(self, event):
+   def Aaron_First_Project(self, event=""):
       import string   ## USED TO GET FILE NAME
       #Getting the file chosen
       selected = self.files.getSelectedIndices()
@@ -324,7 +328,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   .wav file
    # OUTPUTS:  The playing of sped up audio sounds.
-   def Aaron_Second_Project(self, event):
+   def Aaron_Second_Project(self, event=""):
       import string   ## USED TO GET FILE NAME
       #Getting the file chosen
       selected = self.files.getSelectedIndices()
@@ -376,7 +380,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   picture file
    # OUTPUTS:  wav audio file
-   def Peter_First_Project(self, event):
+   def Peter_First_Project(self, event=""):
       import random
       import math
       import string   ## USED TO GET FILE NAME
@@ -475,7 +479,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   wav file
    # OUTPUTS:  avi file (and potentially a series of jpg images)
-   def Peter_Second_Project(self, event):
+   def Peter_Second_Project(self, event=""):
       import random
       import string   ## USED TO GET FILE NAME
       import shutil   ## USED TO COPY AND DELETE IMAGES FOLDER
