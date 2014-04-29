@@ -10,11 +10,11 @@ class FileContentsViewer(swing.JFrame):
    currentDirectory = ""
    files = None
    picture = ""
+   newpicture = ""
    currentPicturePath = ""
    pictureExts = ["jpg","jpeg","gif","png","JPG","JPEG","GIF","PNG"]
    soundExts = ["wav", "WAV"]
    # ----------------
-   
    
    # DESC: Initialization of the frame. Creates the buttons and file list
    #
@@ -156,9 +156,6 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   none
    # OUTPUTS:  a JFrame window with some simple text
    def testing(self, event=""):
-      #mywindow = swing.JFrame(size=(600,100))
-      #mywindow.contentPane.add(swing.JLabel("I am here"), java.awt.BorderLayout.CENTER)
-      #mywindow.visible = true
       mywindow = swing.JFrame(title="TEST OUTPUT",size=(600,100))
       mywindow.setLocationByPlatform(true)
       mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
@@ -173,7 +170,7 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   none
    # OUTPUTS:  JFrame with filter buttons
    def filtersMenu(self, event=""):
-      import string   ## USED TO GET FILE NAME
+      import string   ## USED TO GET FILE NAME, AND DO SOME OTHER STRING MANIPULATION
       #Getting the file chosen
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
@@ -189,18 +186,9 @@ class FileContentsViewer(swing.JFrame):
          mywindow.visible = true
          return None
       self.picture = makePicture(selectedFile)
+      self.newpicture = makePicture(selectedFile)
       self.currentPicturePath = selectedFile
       # --------------------
-      #self.files = swing.JList(filesList)
-      #pane = swing.JScrollPane(self.files, name="ScrollPane", size=(400,200))
-      #self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
-      #fileView = swing.JButton("View Contents", name="FileView", actionPerformed = self.fileView)
-      #self.contentPane.add(fileView, java.awt.BorderLayout.WEST)
-      #changeDir = swing.JButton("Change Directory", name="ChangeDir", actionPerformed = self.changeDirectory)
-      #self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
-      #dirHeader = swing.JLabel(self.currentDirectory, swing.JLabel.CENTER, name="Header")
-      #self.contentPane.add(dirHeader, java.awt.BorderLayout.NORTH)
-      
       newFrame = swing.JFrame(title="Picture Filters Galore!", size=(400,400))
       newFrame.contentPane.layout = java.awt.BorderLayout()
       buttons = swing.JPanel(java.awt.GridLayout(0,3))
@@ -217,7 +205,7 @@ class FileContentsViewer(swing.JFrame):
    
    # DESC: This refreshes the picture being shown
    def refresh(self, event=""):
-      repaint(self.picture)
+      repaint(self.newpicture)
       return None
    #END DEF
    
@@ -229,7 +217,7 @@ class FileContentsViewer(swing.JFrame):
       after = self.currentPicturePath[self.currentPicturePath.rfind("."):]
       now = str(datetime.now())
       filePath = before + "__" + now[:now.rfind(".")] + after
-      writePictureTo(self.picture, filePath)
+      writePictureTo(self.newpicture, filePath)
    #END DEF
 
 
@@ -277,41 +265,33 @@ class FileContentsViewer(swing.JFrame):
           total=0
           for j in range (0, overall):
             total+=getSampleValueAt(sound, ((k*overall*data)+(i*overall)+j))
+          #END FOR J
           avg=total/overall
           if (avg<-50):
             pixelArray[pixelIndex].setColor(red)
-          #END IF
           elif(avg<-25 and avg>=-50):
             pixelArray[pixelIndex].setColor(green)
-          #END ELSE/IF
           elif(avg<0 and avg>=-25):
             pixelArray[pixelIndex].setColor(blue)
-          #END ELSE/IF
           elif(avg<25 and avg>=0):
             pixelArray[pixelIndex].setColor(yellow)
-          #END ELSE/IF
           elif(avg<50 and avg>=25):
             pixelArray[pixelIndex].setColor(magenta)
-          #END ELSE/IF
           elif(avg>=50):
             pixelArray[pixelIndex].setColor(orange)
-          #END ELSE/IF
+          #END IF/ELIF/ELIF
           pixelIndex+=1
-        #END FOR J
+        #END FOR I
         value=value+1
         if(value<10):
           writePictureTo(picture, dir+'photo000'+str(value)+'.jpg')
-        #END IF
         elif(value<100):
           writePictureTo(picture, dir+'photo00'+str(value)+'.jpg')
-        #END ELSE/IF
         elif(value<1000):
           writePictureTo(picture, dir+'photo0'+str(value)+'.jpg')
-        #END ELSE/IF
         else:
           writePictureTo(picture, dir+'photo'+str(value)+'.jpg')
-        #END ELSE
-      #END FOR I
+        #END IF/ELIF/ELSE
       #END FOR K
       #Shows final picture
       show(picture)
@@ -358,17 +338,14 @@ class FileContentsViewer(swing.JFrame):
         value = getSampleValueAt(sound, sample)
         setSampleValueAt(file1, sample, value*200)
       #END FOR
-  
       for sample in range(first-1, second):
         value = getSampleValueAt(sound, sample)
         setSampleValueAt(file2, sample, value*200)
       #END FOR
-  
       for sample in range(second-1, getLength(sound)):
         value = getSampleValueAt(sound, sample)
         setSampleValueAt(file3, sample, value*200)
       #END FOR
-      
       #Blocking play functions will separate the play of the audio files.
       blockingPlay(file1)
       blockingPlay(file2)
