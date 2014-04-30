@@ -155,13 +155,11 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   none
    # OUTPUTS:  a JFrame window with some simple text
-   def testing(self, event=""):
-      #temp = requestString("PUT IN TEXT")
+   def testing(self, event="", text=""):
       mywindow = swing.JFrame(title="TEST OUTPUT",size=(600,100))
       mywindow.setLocationByPlatform(true)
       mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
-      #mywindow.contentPane.add(swing.JTextField(temp))
-      mywindow.contentPane.add(swing.JTextField("Hello, User."))
+      mywindow.contentPane.add(swing.JTextField(text))
       mywindow.visible = true
    #END DEF
 
@@ -197,6 +195,7 @@ class FileContentsViewer(swing.JFrame):
       buttons.add(swing.JButton("Grayscale the photo", actionPerformed=self.grayscale))
       buttons.add(swing.JButton("Swap Red, Green, or Blue", actionPerformed=self.redGreenBlueSwap))
       buttons.add(swing.JButton("Make the negative of the photo", actionPerformed=self.negativeFlip))
+      buttons.add(swing.JButton("Make the photo all red", actionPerformed=self.redScale))
       saveButtons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
       saveButtons.add(swing.JButton("Show Original", actionPerformed=self.refreshOrig))
       saveButtons.add(swing.JButton("Save Picture", actionPerformed=self.savePicture))
@@ -622,10 +621,7 @@ class FileContentsViewer(swing.JFrame):
    # OUTPUTS:  ..
    def BlackAndWhite(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
-      height=getHeight(self.newpicture)
-      width=getWidth(self.newpicture)
       for px in getPixels(self.newpicture):
-         px = getPixel(self.newpicture, w, h)
          rcolor = getRed(px)
          gcolor = getGreen(px)
          bcolor = getBlue(px)
@@ -647,10 +643,7 @@ class FileContentsViewer(swing.JFrame):
    # OUTPUTS:  ..
    def grayscale(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
-      height=getHeight(self.newpicture)
-      width=getWidth(self.newpicture)
       for px in getPixels(self.newpicture):
-         px = getPixel(self.newpicture, w, h)
          level = 255 - int(0.21*getRed(px) + 0.71*getGreen(px) +0.07*getBlue(px))
          color = makeColor(level, level, level)
          setColor(px, color)
@@ -693,14 +686,27 @@ class FileContentsViewer(swing.JFrame):
    # OUTPUTS:  ..
    def negativeFlip(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
-      height=getHeight(self.newpicture)
-      width=getWidth(self.newpicture)
       for px in getPixels(self.newpicture):
          a_red=getRed(px)
          a_green=getGreen(px)
          a_blue=getBlue(px)
          negColor=makeColor(255 - a_red, 255 - a_green, 255 - a_blue)
          setColor(px, negColor)
+      #END FOR
+      self.refresh()
+      return true
+   #END DEF
+   
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def redScale(self, event=""):
+      self.newpicture = makePicture(self.currentPicturePath)
+      for px in getPixels(self.newpicture):
+         a_red = getRed(px)
+         redColor = makeColor(a_red, 0, 0)
+         setColor(px, redColor)
       #END FOR
       self.refresh()
       return true
