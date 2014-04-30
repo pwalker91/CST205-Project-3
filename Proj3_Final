@@ -196,6 +196,8 @@ class FileContentsViewer(swing.JFrame):
       buttons.add(swing.JButton("Swap Red, Green, or Blue", actionPerformed=self.redGreenBlueSwap))
       buttons.add(swing.JButton("Make the negative of the photo", actionPerformed=self.negativeFlip))
       buttons.add(swing.JButton("Make the photo all red", actionPerformed=self.redScale))
+      buttons.add(swing.JButton("Pixelize the photo", actionPerformed=self.pixelizeME))
+      buttons.add(swing.JButton("Mirror the photo", actionPerformed=self.mirrorOnAxis))
       saveButtons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
       saveButtons.add(swing.JButton("Show Original", actionPerformed=self.refreshOrig))
       saveButtons.add(swing.JButton("Save Picture", actionPerformed=self.savePicture))
@@ -734,6 +736,51 @@ class FileContentsViewer(swing.JFrame):
       self.refresh()
       return true
    #END DEF
+   
+   
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def pixelizeME(self, event=""):
+      return None
+      # Go through the upper corner of each square.
+      for rrow in range(0, pic.height(), 10):
+         for rcol in range(0, pic.width(), 10):
+            # Do some initialization here.
+            # Go through the pixels in the square.
+            for row in range(rrow, min(rrow + 10, pic.height())):
+               for col in range(rcol, min(rcol + 10, pic.width())):
+                  # Add up each component, and count the number of pixels
+                  a = false
+                #END FOR
+            #END FOR
+            # Find the average value for this component.
+            # Go through the square once again.
+            for row in range(rrow, min(rrow + 10, pic.height())):
+               for col in range(rcol, min(rcol + 10, pic.width())):
+                  # Assign the average to the pixel.
+                  a = false
+               #END FOR
+            #END FOR
+            a = false
+         #END FOR
+      #END FOR
+      return true
+   #END DEF
+   
+   
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def mirrorOnAxis(self, event=""):
+      import string
+      axis = string.lower(requestString("Please tell me which axis you would the image mirrored on (X, or y)"))
+      self.testing(text=axis)
+      return None
+   #END DEF
+   
 #END CLASS
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
