@@ -4,6 +4,7 @@
 class FileContentsViewer(swing.JFrame):
    import os
    import java
+   import sys
    
    # ----------------
    # Class vars
@@ -633,7 +634,7 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   ..
    # OUTPUTS:  ..
-   def grayscale():
+   def grayscale(self, event=""):
       self.newpicture = self.picture
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
@@ -653,20 +654,22 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   ..
    # OUTPUTS:  ..
-   def redGreenBlueSwap():
+   def redGreenBlueSwap(self, event=""):
       self.newpicture = self.picture
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
+      test = sys.stdin.readline()
+      print test
       #
       # Here ask the user what colors they want to swap
       #
       for w in range(0, width-1):
          for h in range(0, height-1):
             px = getPixel(self.newpicture, w, h)
-            rcolor = getRed(px)
-            qgcolor = getGreen(px)
-            setRed(px, gcolor)
-            setGreen(px, rcolor)
+            colorr = getRed(px)
+            colorg = getGreen(px)
+            setRed(px, colorg)
+            setGreen(px, colorr)
          #END FOR
       #END FOR
       return true
