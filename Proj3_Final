@@ -156,9 +156,11 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   none
    # OUTPUTS:  a JFrame window with some simple text
    def testing(self, event=""):
+      #temp = requestString("PUT IN TEXT")
       mywindow = swing.JFrame(title="TEST OUTPUT",size=(600,100))
       mywindow.setLocationByPlatform(true)
       mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
+      #mywindow.contentPane.add(swing.JTextField(temp))
       mywindow.contentPane.add(swing.JTextField("Hello, User."))
       mywindow.visible = true
    #END DEF
@@ -187,16 +189,19 @@ class FileContentsViewer(swing.JFrame):
          return None
       self.currentPicturePath = selectedFile
       # --------------------
-      newFrame = swing.JFrame(title="Picture Filters Galore!", size=(800,300))
+      newFrame = swing.JFrame(title="Picture Filters Galore!", size=(650,200))
       newFrame.contentPane.layout = java.awt.BorderLayout()
       buttons = swing.JPanel(java.awt.GridLayout(0,3))
+      saveButtons = swing.JPanel(java.awt.GridLayout(0,3))
       buttons.add(swing.JButton("Black and White Contrast", actionPerformed=self.BlackAndWhite))
       buttons.add(swing.JButton("Grayscale the photo", actionPerformed=self.grayscale))
       buttons.add(swing.JButton("Swap Red, Green, or Blue", actionPerformed=self.redGreenBlueSwap))
-      buttons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
-      buttons.add(swing.JButton("Show Original", actionPerformed=self.refreshOrig))
-      buttons.add(swing.JButton("Save Picture", actionPerformed=self.savePicture))
+      buttons.add(swing.JButton("Make the negative of the photo", actionPerformed=self.negativeFlip))
+      saveButtons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
+      saveButtons.add(swing.JButton("Show Original", actionPerformed=self.refreshOrig))
+      saveButtons.add(swing.JButton("Save Picture", actionPerformed=self.savePicture))
       newFrame.contentPane.add(buttons, java.awt.BorderLayout.CENTER)
+      newFrame.contentPane.add(saveButtons, java.awt.BorderLayout.SOUTH)
       newFrame.setLocationByPlatform(true)
       newFrame.visible = true
    #END DEF
