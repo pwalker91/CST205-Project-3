@@ -189,12 +189,12 @@ class FileContentsViewer(swing.JFrame):
       self.newpicture = makePicture(selectedFile)
       self.currentPicturePath = selectedFile
       # --------------------
-      newFrame = swing.JFrame(title="Picture Filters Galore!", size=(400,400))
+      newFrame = swing.JFrame(title="Picture Filters Galore!", size=(800,300))
       newFrame.contentPane.layout = java.awt.BorderLayout()
       buttons = swing.JPanel(java.awt.GridLayout(0,3))
-      buttons.add(swing.JButton("Filter 1", actionPerformed=self.testing))
-      buttons.add(swing.JButton("Filter 2", actionPerformed=self.testing))
-      buttons.add(swing.JButton("Filter 3", actionPerformed=self.testing))
+      buttons.add(swing.JButton("Black and White Contrast", actionPerformed=self.BlackAndWhite))
+      buttons.add(swing.JButton("Grayscale the photo", actionPerformed=self.grayscale))
+      buttons.add(swing.JButton("Swap Red, Green, or Blue", actionPerformed=self.redGreenBlueSwap))
       buttons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
       buttons.add(swing.JButton("Save Picture", actionPerformed=self.savePicture))
       newFrame.contentPane.add(buttons, java.awt.BorderLayout.CENTER)
@@ -600,6 +600,76 @@ class FileContentsViewer(swing.JFrame):
             deleted = false
       #END IF
       return None
+   #END DEF
+   
+   
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def BlackAndWhite(self, event=""):
+      self.newpicture = self.picture
+      height=getHeight(self.newpicture)
+      width=getWidth(self.newpicture)
+      for w in range(0, width-1):
+         for h in range(0, height-1):
+            px = getPixel(self.newpicture, w, h)
+            rcolor = getRed(px)
+            gcolor = getGreen(px)
+            bcolor = getBlue(px)
+            average = (rcolor+gcolor+bcolor)/3
+            if (average > 128):
+               setColor(px, black)
+            elif (average <=128):
+               setColor(px, white)
+            #END IF/ELIF
+         #END FOR
+      #END FOR
+      return true
+   #END DEF
+   
+   
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def grayscale():
+      self.newpicture = self.picture
+      height=getHeight(self.newpicture)
+      width=getWidth(self.newpicture)
+      for w in range(0, width-1):
+         for h in range(0, height-1):
+            px = getPixel(self.newpicture, w, h)
+            level = 255 - int(0.21*getRed(px) + 0.71*getGreen(px) +0.07*getBlue(px))
+            color = makeColor(level, level, level)
+            setColor(px, color)
+         #END FOR
+      #END FOR
+      return true
+   #END DEF
+   
+   
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def redGreenBlueSwap():
+      self.newpicture = self.picture
+      height=getHeight(self.newpicture)
+      width=getWidth(self.newpicture)
+      #
+      # Here ask the user what colors they want to swap
+      #
+      for w in range(0, width-1):
+         for h in range(0, height-1):
+            px = getPixel(self.newpicture, w, h)
+            rcolor = getRed(px)
+            qgcolor = getGreen(px)
+            setRed(px, gcolor)
+            setGreen(px, rcolor)
+         #END FOR
+      #END FOR
+      return true
    #END DEF
 #END CLASS
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
