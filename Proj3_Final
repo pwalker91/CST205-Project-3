@@ -9,8 +9,7 @@ class FileContentsViewer(swing.JFrame):
    # Class vars
    currentDirectory = ""
    files = None
-   picture = ""
-   newpicture = ""
+   newpicture = None
    currentPicturePath = ""
    pictureExts = ["jpg","jpeg","gif","png","JPG","JPEG","GIF","PNG"]
    soundExts = ["wav", "WAV"]
@@ -185,8 +184,6 @@ class FileContentsViewer(swing.JFrame):
          mywindow.setLocationByPlatform(true)
          mywindow.visible = true
          return None
-      self.picture = makePicture(selectedFile)
-      self.newpicture = makePicture(selectedFile)
       self.currentPicturePath = selectedFile
       # --------------------
       newFrame = swing.JFrame(title="Picture Filters Galore!", size=(800,300))
@@ -196,6 +193,7 @@ class FileContentsViewer(swing.JFrame):
       buttons.add(swing.JButton("Grayscale the photo", actionPerformed=self.grayscale))
       buttons.add(swing.JButton("Swap Red, Green, or Blue", actionPerformed=self.redGreenBlueSwap))
       buttons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
+      buttons.add(swing.JButton("Show Original", actionPerformed=self.refreshOrig))
       buttons.add(swing.JButton("Save Picture", actionPerformed=self.savePicture))
       newFrame.contentPane.add(buttons, java.awt.BorderLayout.CENTER)
       newFrame.setLocationByPlatform(true)
@@ -205,18 +203,27 @@ class FileContentsViewer(swing.JFrame):
    
    # DESC: This refreshes the picture being shown
    def refresh(self, event=""):
-      repaint(self.newpicture)
+      if self.newpicture is not None:
+         repaint(self.newpicture)
+      return None
+   #END DEF
+   
+   # DESC: This refreshes the picture being shown
+   def refreshOrig(self, event=""):
+      repaint(makePicture(self.currentPicturePath))
       return None
    #END DEF
    
    # DESC: This writes the current picture in self.picture into the current directory
    def savePicture(self, event=""):
       from datetime import datetime
+      fmt = '%Y%m%d-%I%M%S'
+      now = datetime.now()
+      d_string = now.strftime(fmt)
       import string
       before = self.currentPicturePath[:self.currentPicturePath.rfind(".")]
       after = self.currentPicturePath[self.currentPicturePath.rfind("."):]
-      now = str(datetime.now())
-      filePath = before + "__" + now[:now.rfind(".")] + after
+      filePath = before + "_" + d_string + after
       writePictureTo(self.newpicture, filePath)
    #END DEF
 
@@ -601,14 +608,14 @@ class FileContentsViewer(swing.JFrame):
       #END IF
       return None
    #END DEF
-   
-   
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# THESE ARE THE PICTURE FILTERS
    # DESC: ..
    #
    # INPUTS:   ..
    # OUTPUTS:  ..
    def BlackAndWhite(self, event=""):
-      self.newpicture = self.picture
+      self.newpicture = makePicture(self.currentPicturePath)
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
       for w in range(0, width-1):
@@ -625,6 +632,7 @@ class FileContentsViewer(swing.JFrame):
             #END IF/ELIF
          #END FOR
       #END FOR
+      self.refresh()
       return true
    #END DEF
    
@@ -633,8 +641,8 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   ..
    # OUTPUTS:  ..
-   def grayscale():
-      self.newpicture = self.picture
+   def grayscale(self, event=""):
+      self.newpicture = makePicture(self.currentPicturePath)
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
       for w in range(0, width-1):
@@ -645,6 +653,7 @@ class FileContentsViewer(swing.JFrame):
             setColor(px, color)
          #END FOR
       #END FOR
+      self.refresh()
       return true
    #END DEF
    
@@ -653,8 +662,8 @@ class FileContentsViewer(swing.JFrame):
    #
    # INPUTS:   ..
    # OUTPUTS:  ..
-   def redGreenBlueSwap():
-      self.newpicture = self.picture
+   def redGreenBlueSwap(self, event=""):
+      self.newpicture = makePicture(self.currentPicturePath)
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
       #
@@ -664,15 +673,23 @@ class FileContentsViewer(swing.JFrame):
          for h in range(0, height-1):
             px = getPixel(self.newpicture, w, h)
             rcolor = getRed(px)
-            qgcolor = getGreen(px)
+            gcolor = getGreen(px)
             setRed(px, gcolor)
             setGreen(px, rcolor)
          #END FOR
       #END FOR
+      self.refresh()
       return true
    #END DEF
 #END CLASS
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+
+
+
+
+
 
 
 
