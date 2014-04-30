@@ -619,19 +619,17 @@ class FileContentsViewer(swing.JFrame):
       self.newpicture = makePicture(self.currentPicturePath)
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
-      for w in range(0, width-1):
-         for h in range(0, height-1):
-            px = getPixel(self.newpicture, w, h)
-            rcolor = getRed(px)
-            gcolor = getGreen(px)
-            bcolor = getBlue(px)
-            average = (rcolor+gcolor+bcolor)/3
-            if (average > 128):
-               setColor(px, black)
-            elif (average <=128):
-               setColor(px, white)
-            #END IF/ELIF
-         #END FOR
+      for px in getPixels(self.newpicture):
+         px = getPixel(self.newpicture, w, h)
+         rcolor = getRed(px)
+         gcolor = getGreen(px)
+         bcolor = getBlue(px)
+         average = (rcolor+gcolor+bcolor)/3
+         if (average > 128):
+            setColor(px, black)
+         elif (average <=128):
+            setColor(px, white)
+         #END IF/ELIF
       #END FOR
       self.refresh()
       return true
@@ -646,13 +644,11 @@ class FileContentsViewer(swing.JFrame):
       self.newpicture = makePicture(self.currentPicturePath)
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
-      for w in range(0, width-1):
-         for h in range(0, height-1):
-            px = getPixel(self.newpicture, w, h)
-            level = 255 - int(0.21*getRed(px) + 0.71*getGreen(px) +0.07*getBlue(px))
-            color = makeColor(level, level, level)
-            setColor(px, color)
-         #END FOR
+      for px in getPixels(self.newpicture):
+         px = getPixel(self.newpicture, w, h)
+         level = 255 - int(0.21*getRed(px) + 0.71*getGreen(px) +0.07*getBlue(px))
+         color = makeColor(level, level, level)
+         setColor(px, color)
       #END FOR
       self.refresh()
       return true
@@ -680,6 +676,26 @@ class FileContentsViewer(swing.JFrame):
             setRed(px, colorg)
             setGreen(px, colorr)
          #END FOR
+      #END FOR
+      self.refresh()
+      return true
+   #END DEF
+   
+   
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def negativeFlip(self, event=""):
+      self.newpicture = makePicture(self.currentPicturePath)
+      height=getHeight(self.newpicture)
+      width=getWidth(self.newpicture)
+      for px in getPixels(self.newpicture):
+         a_red=getRed(px)
+         a_green=getGreen(px)
+         a_blue=getBlue(px)
+         negColor=makeColor(255 - a_red, 255 - a_green, 255 - a_blue)
+         setColor(px, negColor)
       #END FOR
       self.refresh()
       return true
