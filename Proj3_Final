@@ -654,6 +654,47 @@ class FileContentsViewer(swing.JFrame):
       return true
    #END DEF
    
+   # DESC: ..
+   #
+   # INPUTS:   ..
+   # OUTPUTS:  ..
+   def redGreenBlueSwap(self, event=""):
+      import string as str
+      self.newpicture = makePicture(self.currentPicturePath)
+      show(self.newpicture)
+      #return none
+      height=getHeight(self.newpicture)
+      width=getWidth(self.newpicture)
+      color1 = str.lower(requestString("Enter Red, Blue or Green"))
+      color2 = str.lower(requestString("Enter Red, Blue or Green"))
+      check = ['red', 'blue', 'green']
+      if (color1 not in check or color2 not in check):
+        return none
+      #
+      # Here ask the user what colors they want to swap
+      #
+      for px in getPixels(self.newpicture):
+        if (color1=="red"):
+          color3 = getRed(px)
+        elif (color1=="blue"):
+          color3 = getBlue(px)
+        elif (color1=="green"):
+          color3 = getGreen(px)
+  
+        if (color2=="red"):
+          color4 = getRed(px)
+        elif (color2=="blue"):
+          color4 = getBlue(px)
+        elif (color2=="green"):
+          color4 = getGreen(px)
+        self.setStuff(color2, color3, px)
+        self.setStuff(color1, color4, px)
+      #END FOR
+      self.testing(text="BLAH")
+      self.refresh()
+      return true
+   #END DEF
+   
    def getStuff(self, color, px):
      if (color=="red"):
        return getRed(px)
@@ -672,38 +713,6 @@ class FileContentsViewer(swing.JFrame):
      elif (first=="green"):
        setGreen(second, px)
      return true
-   
-   # DESC: ..
-   #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
-   def redGreenBlueSwap(self, event=""):
-      import string as str
-      self.newpicture = makePicture(self.currentPicturePath)
-      height=getHeight(self.newpicture)
-      width=getWidth(self.newpicture)
-      color1 = str.lower(requestString("Enter Red, Blue or Green"))
-      color2 = str.lower(requestString("Enter Red, Blue or Green"))
-      check = ['red', 'blue', 'green']
-      if (color1 not in check or color2 not in check):
-        return none
-      #
-      # Here ask the user what colors they want to swap
-      #
-      
-      for w in range(0, width-1):
-         for h in range(0, height-1):
-            px = getPixel(self.newpicture, w, h)
-            color3 = getStuff(str.lower(color1), px)
-            color4 = getStuff(str.lower(color2), px)
-            setStuff(color2, color3)
-            setStuff(color1, color4)
-         #END FOR
-      #END FOR
-      self.refresh()
-      return true
-   #END DEF
-   
    
    # DESC: ..
    #
