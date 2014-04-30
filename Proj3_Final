@@ -652,27 +652,50 @@ class FileContentsViewer(swing.JFrame):
       return true
    #END DEF
    
+   def getStuff(self, color, px):
+     if (color=="red"):
+       return getRed(px)
+     elif (color=="blue"):
+       return getBlue(px)
+     elif (color=="green"):
+       return getGreen(px)
+     else:
+       return getRed(px)
+       
+   def setStuff(self, first, second, px):
+     if (first=="red"):
+       setRed(second, px)
+     elif (first=="blue"):
+       setBlue(second, px)
+     elif (first=="green"):
+       setGreen(second, px)
+     return true
    
    # DESC: ..
    #
    # INPUTS:   ..
    # OUTPUTS:  ..
    def redGreenBlueSwap(self, event=""):
+      import string as str
       self.newpicture = makePicture(self.currentPicturePath)
       height=getHeight(self.newpicture)
       width=getWidth(self.newpicture)
-      test = sys.stdin.readline()
-      print test
+      color1 = str.lower(requestString("Enter Red, Blue or Green"))
+      color2 = str.lower(requestString("Enter Red, Blue or Green"))
+      check = ['red', 'blue', 'green']
+      if (color1 not in check or color2 not in check):
+        return none
       #
       # Here ask the user what colors they want to swap
       #
+      
       for w in range(0, width-1):
          for h in range(0, height-1):
             px = getPixel(self.newpicture, w, h)
-            colorr = getRed(px)
-            colorg = getGreen(px)
-            setRed(px, colorg)
-            setGreen(px, colorr)
+            color3 = getStuff(str.lower(color1), px)
+            color4 = getStuff(str.lower(color2), px)
+            setStuff(color2, color3)
+            setStuff(color1, color4)
          #END FOR
       #END FOR
       self.refresh()
