@@ -24,22 +24,22 @@ class FileContentsViewer(swing.JFrame):
       swing.JFrame.__init__(self, title="File Contents Viewer", size=(800,600))
       self.setLocationByPlatform(true)
       self.contentPane.layout = java.awt.BorderLayout()
-      
+      #Setting up the scroll list of files that can be used by the programs
       self.currentDirectory = directory
       filesList = self.listFilesInDirectory(self.currentDirectory)
       self.files = swing.JList(filesList)
       pane = swing.JScrollPane(self.files, name="ScrollPane", size=(400,200))
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
-      
+      #Adding a button that will let the user view the file they are choosing
       fileView = swing.JButton("View Contents", name="FileView", actionPerformed = self.fileView)
       self.contentPane.add(fileView, java.awt.BorderLayout.WEST)
-      
+      #Adding a button that will allow the user to change the directory they are viewing
       changeDir = swing.JButton("Change Directory", name="ChangeDir", actionPerformed = self.changeDirectory)
       self.contentPane.add(changeDir, java.awt.BorderLayout.SOUTH)
-      
+      #Adding a text header, showing the user where they current are located
       dirHeader = swing.JLabel(self.currentDirectory, swing.JLabel.CENTER, name="Header")
       self.contentPane.add(dirHeader, java.awt.BorderLayout.NORTH)
-      
+      #Adding a sub-Panel that will have the buttons that can be used to alter/manipulate the files
       smallFrame = swing.JPanel(java.awt.GridLayout(0,1), name="ButtonGrid")
       smallFrame.add(swing.JButton("Aaron's First Project", actionPerformed=self.Aaron_First_Project))
       smallFrame.add(swing.JButton("Aaron's Second Project", actionPerformed=self.Aaron_Second_Project))
@@ -48,7 +48,7 @@ class FileContentsViewer(swing.JFrame):
       smallFrame.add(swing.JButton("Some Fun Picture Filters", actionPerformed=self.filtersMenu))
       smallFrame.add(swing.JButton("TEST", actionPerformed=self.testing))
       self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
-      
+      #Showing the GUI
       self.pack()
       self.visible = true
    #END DEF
@@ -62,16 +62,14 @@ class FileContentsViewer(swing.JFrame):
       selected = self.files.getSelectedIndices()
       selectedFile = self.files.getModel( ).getElementAt( selected[0])
       selectedFile = self.currentDirectory+ "/"+ selectedFile
-      if (selectedFile.endswith(".jpg") or selectedFile.endswith(".JPG") or
-          selectedFile.endswith(".png") or selectedFile.endswith(".PNG")
-          ):
+      fileExt = selectedFile.split(".")[-1]
+      if (fileExt in self.pictureExts):
          pic = makePicture(selectedFile)
          openPictureTool(pic)
       #END IF
-      if selectedFile.endswith(".wav"):
+      if (fileExt in self.soundExts):
          snd = makeSound(selectedFile)
          openSoundTool(snd)
-         #END WHILE
       #END IF
    #END DEF
    
@@ -91,7 +89,6 @@ class FileContentsViewer(swing.JFrame):
       self.files = swing.JList(filesList)
       pane = swing.JScrollPane(self.files, name="ScrollPane", size=(400,200))
       self.contentPane.add(pane, java.awt.BorderLayout.CENTER)
-      
       components = self.contentPane.getComponents()
       index = 0
       for elem in components:
@@ -100,10 +97,10 @@ class FileContentsViewer(swing.JFrame):
       self.contentPane.remove(index)
       dirHeader = swing.JLabel(self.currentDirectory, swing.JLabel.CENTER, name="Header")
       self.contentPane.add(dirHeader, java.awt.BorderLayout.NORTH)
-      
       self.pack()
       self.visible = true
    #END DEF
+   
    
    # DESC: This returns a list of .jpg or .wav files in either a given or chosen directory
    #
@@ -118,7 +115,6 @@ class FileContentsViewer(swing.JFrame):
          val = None
          cancelCount = 0
          val = chooser.showDialog(self, None)
-         #END WHILE
          if (val == swing.JFileChooser.CANCEL_OPTION):
             if (self.currentDirectory == ""):
                if os.path.isdir( os.path.expanduser("~")+"/Desktop" ):
@@ -128,6 +124,7 @@ class FileContentsViewer(swing.JFrame):
                #END IF/ELSE
             else:
                keeping_the_current_directory = true
+            #END IF/ELSE
          else:
             self.currentDirectory = str(chooser.getSelectedFile())
          #END IF/ELSE
@@ -159,7 +156,7 @@ class FileContentsViewer(swing.JFrame):
       mywindow = swing.JFrame(title="TEST OUTPUT",size=(600,100))
       mywindow.setLocationByPlatform(true)
       mywindow.contentPane.layout = java.awt.FlowLayout(java.awt.FlowLayout.CENTER)
-      mywindow.contentPane.add(swing.JTextField(text))
+      mywindow.contentPane.add(swing.JTextField(str(text)))
       mywindow.visible = true
    #END DEF
 
@@ -195,7 +192,7 @@ class FileContentsViewer(swing.JFrame):
       buttons.add(swing.JButton("Grayscale the photo", actionPerformed=self.grayscale))
       buttons.add(swing.JButton("Swap Red, Green, or Blue", actionPerformed=self.redGreenBlueSwap))
       buttons.add(swing.JButton("Make the negative of the photo", actionPerformed=self.negativeFlip))
-      buttons.add(swing.JButton("Make the photo all red", actionPerformed=self.redScale))
+      buttons.add(swing.JButton("Make the photo all one color", actionPerformed=self.singleColorScale))
       buttons.add(swing.JButton("Pixelize the photo", actionPerformed=self.pixelizeME))
       buttons.add(swing.JButton("Mirror the photo", actionPerformed=self.mirrorOnAxis))
       saveButtons.add(swing.JButton("Show Picture", actionPerformed=self.refresh))
@@ -569,7 +566,6 @@ class FileContentsViewer(swing.JFrame):
             newAverages[q] = int( (float(sampleAvg)/samplesPerSection) )
          #END FOR
          averagesArray.append(newAverages)
-         
          #This is creating the image for this iteration
          for i in range(0, sampleSectionsPerFrame):
             for j in range(0, pixelsPerSection):
@@ -601,12 +597,9 @@ class FileContentsViewer(swing.JFrame):
       #This is where the movie is created
       mov = makeMovieFromInitialFile(self.currentDirectory + folder + "frame00001.jpg")
       writeAVI(mov, self.currentDirectory + "/" + file_name[:-4] + ".avi", framesPerSec)
-      
       response = requestString("Would you like to keep the folder of images? (y/n) ")
       while (response != "y") and (response != "n"):
          response = requestString("Would you like to keep the folder of images? (y/n) ")
-   
-         ### MOVE IMAGES FOLDER WITH FILENAME APPENDED
       if response == 'n':
          try:
             shutil.rmtree(self.currentDirectory+folder)
@@ -617,10 +610,11 @@ class FileContentsViewer(swing.JFrame):
    #END DEF
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # THESE ARE THE PICTURE FILTERS
-   # DESC: ..
+   # DESC: This converts the image into a very contrasting, black and white image. Using an algorithm,
+   #       pixels are turned either solid black or white. The resulting image is then displayed
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   none
+   # OUTPUTS:  none
    def BlackAndWhite(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
       for px in getPixels(self.newpicture):
@@ -641,8 +635,8 @@ class FileContentsViewer(swing.JFrame):
    
    # DESC: ..
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   none
+   # OUTPUTS:  none
    def grayscale(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
       for px in getPixels(self.newpicture):
@@ -654,10 +648,12 @@ class FileContentsViewer(swing.JFrame):
       return true
    #END DEF
    
-   # DESC: ..
+   
+   # DESC: This asks the user what two colors in the image they would like swapped.
+   #       The program swaps the RGB values of the colors they chose, and displays the end image
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   2 String, the colors the user wishes to swap
+   # OUTPUTS:  none
    def redGreenBlueSwap(self, event=""):
       import string as str
       self.newpicture = makePicture(self.currentPicturePath)
@@ -694,7 +690,12 @@ class FileContentsViewer(swing.JFrame):
       self.refresh()
       return true
    #END DEF
-   
+   # DESC: Used in redGreenBlueSwap. Given the string of the color and a pixel object,
+   #       returns the RGB integer value.
+   #
+   # INPUTS:   color, a String
+   #           px, a Pixel object
+   # OUTPUTS:  Integer, the RGB value of the color chosen in the given pixel
    def getStuff(self, color, px):
      if (color=="red"):
        return getRed(px)
@@ -704,20 +705,29 @@ class FileContentsViewer(swing.JFrame):
        return getGreen(px)
      else:
        return getRed(px)
-       
-   def setStuff(self, first, second, px):
-     if (first=="red"):
-       setRed(second, px)
-     elif (first=="blue"):
-       setBlue(second, px)
-     elif (first=="green"):
-       setGreen(second, px)
-     return true
-   
-   # DESC: ..
+   #END DEf
+   # DESC: This sets the RGB value of the given color
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   color, String
+   #           value, Integer RGB value
+   #           px, a Pixel object
+   # OUTPUTS:  none
+   def setStuff(self, color, value, px):
+     if (color=="red"):
+       setRed(value, px)
+     elif (color=="blue"):
+       setBlue(value, px)
+     elif (color=="green"):
+       setGreen(value, px)
+     return true
+   #END DEF
+   
+   
+   # DESC: This makes a negative of the orignal image (for each pixel value, reassign
+   #       as 255 - value)
+   #
+   # INPUTS:   none
+   # OUTPUTS:  none
    def negativeFlip(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
       for px in getPixels(self.newpicture):
@@ -731,63 +741,124 @@ class FileContentsViewer(swing.JFrame):
       return true
    #END DEF
    
-   # DESC: ..
+   
+   # DESC: This removes all but the specified color from the image
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
-   def redScale(self, event=""):
+   # INPUTS:   String, color
+   # OUTPUTS:  none
+   def singleColorScale(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
+      color_string = str.lower(requestString("Enter Red, Blue or Green"))
       for px in getPixels(self.newpicture):
-         a_red = getRed(px)
-         redColor = makeColor(a_red, 0, 0)
-         setColor(px, redColor)
+         a_red = 0
+         a_green = 0
+         a_blue = 0
+         if color_string == "red":
+            a_red = getRed(px)
+         elif color_string == "green":
+            a_green = getGreen(px)
+         elif color_string == "blue":
+            a_blue = getBlue(px)
+         else:
+            a_red = getRed(px)
+         #END IF/ELIF/ELSE
+         newcolor = makeColor(a_red, a_green, a_blue)
+         setColor(px, newcolor)
       #END FOR
       self.refresh()
       return true
    #END DEF
    
    
-   # DESC: ..
+   # DESC: Pixelizes the image, so that the image is a little more grainy
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   Integer, the scale of graininess (i.e. the number of pixels that will be combined)
+   # OUTPUTS:  none
    def pixelizeME(self, event=""):
-      return None
-      # Go through the upper corner of each square.
-      for rrow in range(0, pic.height(), 10):
-         for rcol in range(0, pic.width(), 10):
-            # Do some initialization here.
-            # Go through the pixels in the square.
-            for row in range(rrow, min(rrow + 10, pic.height())):
-               for col in range(rcol, min(rcol + 10, pic.width())):
-                  # Add up each component, and count the number of pixels
-                  a = false
+      self.newpicture = makePicture(self.currentPicturePath)
+      pixelization = requestIntegerInRange("Please the scale of pixelization (2-10)", 2, 10)
+      height = getHeight(self.newpicture)
+      width = getWidth(self.newpicture)
+      for rrow in range(0, height, pixelization):
+         for rcol in range(0, width, pixelization):
+            ttlRed = 0
+            ttlGreen = 0
+            ttlBlue = 0
+            ttlPixelCount = 0
+            for row in range(rrow, min(rrow + pixelization, height)):
+               for col in range(rcol, min(rcol + pixelization, width)):
+                  pixel = getPixel(self.newpicture, col, row)
+                  ttlRed += getRed(pixel)
+                  ttlGreen += getGreen(pixel)
+                  ttlBlue += getBlue(pixel)
+                  ttlPixelCount += 1
                 #END FOR
             #END FOR
-            # Find the average value for this component.
-            # Go through the square once again.
-            for row in range(rrow, min(rrow + 10, pic.height())):
-               for col in range(rcol, min(rcol + 10, pic.width())):
-                  # Assign the average to the pixel.
-                  a = false
+            avgRed = ttlRed / ttlPixelCount
+            avgGreen = ttlGreen / ttlPixelCount
+            avgBlue = ttlBlue / ttlPixelCount
+            for row in range(rrow, min(rrow + pixelization, height)):
+               for col in range(rcol, min(rcol + pixelization, width)):
+                  pixel = getPixel(self.newpicture, col, row)
+                  pixel.setRed(avgRed)
+                  pixel.setGreen(avgGreen)
+                  pixel.setBlue(avgBlue)
                #END FOR
             #END FOR
-            a = false
          #END FOR
       #END FOR
+      self.refresh()
       return true
    #END DEF
    
    
-   # DESC: ..
+   # DESC: Copies the half of the image specified along the given axis.
+   #       Axes are based off of the center of the photo (imagine drawing a line down or across the center)
    #
-   # INPUTS:   ..
-   # OUTPUTS:  ..
+   # INPUTS:   axis, String (x or y)
+   #           half, String (up, down, left, or right)
+   # OUTPUTS:  none
    def mirrorOnAxis(self, event=""):
-      import string
-      axis = string.lower(requestString("Please tell me which axis you would the image mirrored on (X, or y)"))
-      self.testing(text=axis)
-      return None
+      self.newpicture = makePicture(self.currentPicturePath)
+      axis = str.lower(requestString("Please specify the center axis you would the image mirrored on (X, or Y)"))
+      half = str.lower(requestString("Please specify which half you would like to keep.\nUp or Down (for X axis), Left or Right (for Y axis)"))
+      height = getHeight(self.newpicture)
+      width = getWidth(self.newpicture)
+      if axis == "x" or axis != "y":
+         if half == "up" or half != "down":
+            start = height/2
+            end = height
+         else:
+            start = 0
+            end = height/2
+            height -= 1
+         #END IF/ELSE
+         for row in range(start, end):
+            for col in range(0, width):
+               pixelOrig = getPixel(self.newpicture, col, (height-row)).getColor()
+               pixelMirror = getPixel(self.newpicture, col, row)
+               pixelMirror.setColor(pixelOrig)
+            #END FOR
+         #END FOR
+      else:
+         if half == "left" or half != "right":
+            start = width/2
+            end = width
+         else:
+            start = 0
+            end = width/2
+            width -= 1
+         #END IF/ELSE
+         for row in range(0, height):
+            for col in range(start, end):
+               pixelOrig = getPixel(self.newpicture, (width-col), row).getColor()
+               pixelMirror = getPixel(self.newpicture, col, row)
+               pixelMirror.setColor(pixelOrig)
+            #END FOR
+         #END FOR
+      #END IF/ELSE
+      self.refresh()
+      return true
    #END DEF
    
 #END CLASS
