@@ -658,9 +658,6 @@ class FileContentsViewer(swing.JFrame):
       import string as str
       self.newpicture = makePicture(self.currentPicturePath)
       show(self.newpicture)
-      #return none
-      height=getHeight(self.newpicture)
-      width=getWidth(self.newpicture)
       color1 = str.lower(requestString("Enter Red, Blue or Green"))
       color2 = str.lower(requestString("Enter Red, Blue or Green"))
       check = ['red', 'blue', 'green']
@@ -669,22 +666,57 @@ class FileContentsViewer(swing.JFrame):
       #
       # Here ask the user what colors they want to swap
       #
+      self.testing(text=color1)
       for px in getPixels(self.newpicture):
-        if (color1=="red"):
-          color3 = getRed(px)
+        value=px
+        
+        '''if (color1=="red"):
+          value1=getRed(px)
+      
         elif (color1=="blue"):
-          color3 = getBlue(px)
+          value1==getBlue(px)
+      
         elif (color1=="green"):
-          color3 = getGreen(px)
-  
+          value1==getGreen(px)
+        
         if (color2=="red"):
-          color4 = getRed(px)
+          value2=getRed(px)
+      
         elif (color2=="blue"):
-          color4 = getBlue(px)
+          value2==getBlue(px)
+      
         elif (color2=="green"):
-          color4 = getGreen(px)
-        self.setStuff(color2, color3, px)
-        self.setStuff(color1, color4, px)
+          value2==getGreen(px)
+        
+        if (color1=="red" and color2=="blue"):
+          setRed(value2, px)
+          setBlue(value1, px)
+          
+        elif (color1=="red" and color2=="green"):
+          setRed(value2, px)
+          setGreen(value1, px)
+          
+        elif (color1=="green" and color2=="blue"):
+          setGreen(value2, px)
+          setBlue(value1, px)
+          
+        elif (color1=="green" and color2=="red"):
+          setGreen(value2, px)
+          setRed(value1, px)
+          
+        elif (color1=="blue" and color2=="green"):
+          setBlue(value2, px)
+          setGreen(value1, px)
+          
+        elif (color1=="blue" and color2=="red"):
+          setBlue(value2, px)
+          setRed(value1, px)
+        '''
+        first=self.getStuff(color1, value)
+        second=self.getStuff(color2, value)
+        self.setStuff(color2, first, value)
+        self.setStuff(color1, second, value)
+          
       #END FOR
       self.testing(text="BLAH")
       self.refresh()
@@ -696,15 +728,15 @@ class FileContentsViewer(swing.JFrame):
    # INPUTS:   color, a String
    #           px, a Pixel object
    # OUTPUTS:  Integer, the RGB value of the color chosen in the given pixel
-   def getStuff(self, color, px):
+   def getStuff(self, color, value):
      if (color=="red"):
-       return getRed(px)
+       return getRed(value)
      elif (color=="blue"):
-       return getBlue(px)
+       return getBlue(value)
      elif (color=="green"):
-       return getGreen(px)
+       return getGreen(value)
      else:
-       return getRed(px)
+       return getRed(value)
    #END DEf
    # DESC: This sets the RGB value of the given color
    #
@@ -712,13 +744,13 @@ class FileContentsViewer(swing.JFrame):
    #           value, Integer RGB value
    #           px, a Pixel object
    # OUTPUTS:  none
-   def setStuff(self, color, value, px):
+   def setStuff(self, color, number, value):
      if (color=="red"):
-       setRed(value, px)
+       setRed(number, value)
      elif (color=="blue"):
-       setBlue(value, px)
+       setBlue(number, value)
      elif (color=="green"):
-       setGreen(value, px)
+       setGreen(number, value)
      return true
    #END DEF
    
