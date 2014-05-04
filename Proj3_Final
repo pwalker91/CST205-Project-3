@@ -666,59 +666,37 @@ class FileContentsViewer(swing.JFrame):
       #
       # Here ask the user what colors they want to swap
       #
-      self.testing(text=color1)
+      #self.testing(text=color1)
       for px in getPixels(self.newpicture):
         value=px
         
-        '''if (color1=="red"):
-          value1=getRed(px)
-      
-        elif (color1=="blue"):
-          value1==getBlue(px)
-      
-        elif (color1=="green"):
-          value1==getGreen(px)
-        
-        if (color2=="red"):
-          value2=getRed(px)
-      
-        elif (color2=="blue"):
-          value2==getBlue(px)
-      
-        elif (color2=="green"):
-          value2==getGreen(px)
-        
         if (color1=="red" and color2=="blue"):
-          setRed(value2, px)
-          setBlue(value1, px)
+          setRed(px, getBlue(px))
+          #setBlue(px, getRed(px))
           
         elif (color1=="red" and color2=="green"):
-          setRed(value2, px)
-          setGreen(value1, px)
+          setRed(getGreen(px), px)
+          setGreen(getRed(px), px)
           
         elif (color1=="green" and color2=="blue"):
-          setGreen(value2, px)
-          setBlue(value1, px)
+          setGreen(getBlue(px), px)
+          setBlue(getGreen(px), px)
           
         elif (color1=="green" and color2=="red"):
-          setGreen(value2, px)
-          setRed(value1, px)
+          setGreen(getRed(px), px)
+          setRed(getGreen(px), px)
           
         elif (color1=="blue" and color2=="green"):
-          setBlue(value2, px)
-          setGreen(value1, px)
+          setBlue(getGreen(px), px)
+          setGreen(getBlue(px), px)
           
         elif (color1=="blue" and color2=="red"):
-          setBlue(value2, px)
-          setRed(value1, px)
-        '''
-        first=self.getStuff(color1, value)
-        second=self.getStuff(color2, value)
-        self.setStuff(color2, first, value)
-        self.setStuff(color1, second, value)
+          setBlue(getRed(px), px)
+          setRed(getBlue(px), px)
+        
           
       #END FOR
-      self.testing(text="BLAH")
+      #self.testing(text="BLAH")
       self.refresh()
       return true
    #END DEF
