@@ -671,28 +671,40 @@ class FileContentsViewer(swing.JFrame):
         value=px
         
         if (color1=="red" and color2=="blue"):
-          setRed(px, getBlue(px))
-          #setBlue(px, getRed(px))
+          rcolor = getRed(px)
+          bcolor = getBlue(px)
+          setRed(px, bcolor)
+          setBlue(px, rcolor)
           
         elif (color1=="red" and color2=="green"):
-          setRed(getGreen(px), px)
-          setGreen(getRed(px), px)
+          rcolor = getRed(px)
+          gcolor = getGreen(px)
+          setRed(px, gcolor)
+          setGreen(px, rcolor)
           
         elif (color1=="green" and color2=="blue"):
-          setGreen(getBlue(px), px)
-          setBlue(getGreen(px), px)
+          gcolor = getGreen(px)
+          bcolor = getBlue(px)
+          setGreen(px, bcolor)
+          setBlue(px, gcolor)
           
         elif (color1=="green" and color2=="red"):
-          setGreen(getRed(px), px)
-          setRed(getGreen(px), px)
+          gcolor = getGreen(px)
+          rcolor = getRed(px)
+          setGreen(px, rcolor)
+          setRed(px, gcolor)
           
         elif (color1=="blue" and color2=="green"):
-          setBlue(getGreen(px), px)
-          setGreen(getBlue(px), px)
+          bcolor = getBlue(px)
+          gcolor = getGreen(px)
+          setBlue(px, gcolor)
+          setGreen(px, bcolor)
           
         elif (color1=="blue" and color2=="red"):
-          setBlue(getRed(px), px)
-          setRed(getBlue(px), px)
+          bcolor = getBlue(px)
+          rcolor = getRed(px)
+          setBlue(px, rcolor)
+          setRed(px, bcolor)
         
           
       #END FOR
