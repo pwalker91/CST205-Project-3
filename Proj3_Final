@@ -798,7 +798,7 @@ class FileContentsViewer(swing.JFrame):
    # OUTPUTS:  none
    def pixelizeME(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
-      pixelization = requestIntegerInRange("Please the scale of pixelization (2-10)", 2, 10)
+      pixelization = requestIntegerInRange("Please specify the scale of pixelization (2-10)", 2, 10)
       height = getHeight(self.newpicture)
       width = getWidth(self.newpicture)
       for rrow in range(0, height, pixelization):
@@ -842,7 +842,7 @@ class FileContentsViewer(swing.JFrame):
    # OUTPUTS:  none
    def mirrorOnAxis(self, event=""):
       self.newpicture = makePicture(self.currentPicturePath)
-      axis = str.lower(requestString("Please specify the center axis you would the image mirrored on (X, or Y)"))
+      axis = str.lower(requestString("Please specify the center axis you would like the image mirrored on (X, or Y)"))
       half = str.lower(requestString("Please specify which half you would like to keep.\nUp or Down (for X axis), Left or Right (for Y axis)"))
       height = getHeight(self.newpicture)
       width = getWidth(self.newpicture)
