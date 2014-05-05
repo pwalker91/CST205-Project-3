@@ -46,7 +46,7 @@ class FileContentsViewer(swing.JFrame):
       smallFrame.add(swing.JButton("Peter's First Project", actionPerformed=self.Peter_First_Project))
       smallFrame.add(swing.JButton("Peter's Second Project", actionPerformed=self.Peter_Second_Project))
       smallFrame.add(swing.JButton("Some Fun Picture Filters", actionPerformed=self.filtersMenu))
-      smallFrame.add(swing.JButton("TEST", actionPerformed=self.testing))
+      #smallFrame.add(swing.JButton("TEST", actionPerformed=self.testing))
       self.contentPane.add(smallFrame, java.awt.BorderLayout.EAST)
       #Showing the GUI
       self.pack()
@@ -711,39 +711,7 @@ class FileContentsViewer(swing.JFrame):
       #self.testing(text="BLAH")
       self.refresh()
       return true
-   #END DEF
-   # DESC: Used in redGreenBlueSwap. Given the string of the color and a pixel object,
-   #       returns the RGB integer value.
-   #
-   # INPUTS:   color, a String
-   #           px, a Pixel object
-   # OUTPUTS:  Integer, the RGB value of the color chosen in the given pixel
-   def getStuff(self, color, value):
-     if (color=="red"):
-       return getRed(value)
-     elif (color=="blue"):
-       return getBlue(value)
-     elif (color=="green"):
-       return getGreen(value)
-     else:
-       return getRed(value)
-   #END DEf
-   # DESC: This sets the RGB value of the given color
-   #
-   # INPUTS:   color, String
-   #           value, Integer RGB value
-   #           px, a Pixel object
-   # OUTPUTS:  none
-   def setStuff(self, color, number, value):
-     if (color=="red"):
-       setRed(number, value)
-     elif (color=="blue"):
-       setBlue(number, value)
-     elif (color=="green"):
-       setGreen(number, value)
-     return true
-   #END DEF
-   
+   #END DEF   
    
    # DESC: This makes a negative of the orignal image (for each pixel value, reassign
    #       as 255 - value)
