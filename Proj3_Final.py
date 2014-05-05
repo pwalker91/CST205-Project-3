@@ -186,7 +186,7 @@ class FileContentsViewer(swing.JFrame):
       # --------------------
       newFrame = swing.JFrame(title="Picture Filters Galore!", size=(650,200))
       newFrame.contentPane.layout = java.awt.BorderLayout()
-      buttons = swing.JPanel(java.awt.GridLayout(0,3))
+      buttons = swing.JPanel(java.awt.GridLayout(0,2))
       saveButtons = swing.JPanel(java.awt.GridLayout(0,3))
       buttons.add(swing.JButton("Black and White Contrast", actionPerformed=self.BlackAndWhite))
       buttons.add(swing.JButton("Grayscale the photo", actionPerformed=self.grayscale))
