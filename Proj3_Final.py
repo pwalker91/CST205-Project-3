@@ -657,7 +657,6 @@ class FileContentsViewer(swing.JFrame):
    def redGreenBlueSwap(self, event=""):
       import string as str
       self.newpicture = makePicture(self.currentPicturePath)
-      show(self.newpicture)
       color1 = str.lower(requestString("Enter Red, Blue or Green"))
       color2 = str.lower(requestString("Enter Red, Blue or Green"))
       check = ['red', 'blue', 'green']
